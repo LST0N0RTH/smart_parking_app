@@ -28,7 +28,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('ชำระเงินสำเร็จ'),
+          content: Text('ชำrateเงินสำเร็จ'),
           backgroundColor: Color(0xFF228B22), // 🟢 
         ),
       );
@@ -53,7 +53,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         title: const Text('ชำระเงิน', style: TextStyle(color: Color(0xFF0000CD), fontWeight: FontWeight.bold)), // 🔘 น้ำเงิน
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          color: const Color(0xFF0000CD), // 🔵 ไอคอนย้อนกลับใช้สีน้ำเงินสีเดียวกับหัวข้อตามสั่ง
+          color: const Color(0xFF0000CD), 
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -74,19 +74,18 @@ class _PaymentScreenState extends State<PaymentScreen> {
               ),
               child: Column(children: [
                 const Text('สรุปค่าจอดรถ',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF9E9E9E))), // 🔘
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)), // 🔵 เปลี่ยนเป็นสีเดียวกับเมนูล่าง
                 const SizedBox(height: 16),
                 _summaryRow('Slot',       b.slotName),
                 _summaryRow('เข้า',       fmt.format(b.startTime)),
                 _summaryRow('ออก',        fmt.format(b.endTime)),
                 _summaryRow('ระยะเวลา',  _duration(b.startTime, b.endTime)),
-                const Divider(height: 24, color: Color(0xFFFFFFFF)), // 🔘
+                const Divider(height: 24, color: Color(0xFFFFFFFF)), 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text('รวม',
-                        style: TextStyle(fontSize: 16,
-                            fontWeight: FontWeight.bold, color: Color(0xFF9E9E9E))), // 🔘
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)), // 🔵 เปลี่ยนเป็นสีเดียวกับเมนูล่าง
                     Text('${b.totalAmount} บาท',
                         style: const TextStyle(
                             fontSize: 22, fontWeight: FontWeight.bold,
@@ -100,7 +99,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
             // เลือกวิธีชำระ
             const Text('วิธีชำระเงิน',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF9E9E9E))), // 🔘
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black54)), // 🔵 เปลี่ยนเป็นสีเดียวกับเมนูล่าง
             const SizedBox(height: 10),
 
             _methodTile(
@@ -126,11 +125,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFF9E9E9E)), // 🔘 เปลี่ยนเป็นสีเทาใหม่
+                  border: Border.all(color: Colors.black26), // ปรับสีกรอบให้อ่อนลงเล็กน้อยสบายตา
                 ),
                 child: Column(children: [
                   const Text('สแกน QR เพื่อชำระเงิน',
-                      style: TextStyle(fontSize: 13, color: Color(0xFF9E9E9E))), // 🔘
+                      style: TextStyle(fontSize: 13, color: Colors.black54)), // 🔵 เปลี่ยนเป็นสีเดียวกับเมนูล่าง
                   const SizedBox(height: 14),
                   // QR Placeholder
                   Container(
@@ -142,17 +141,17 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     child: const Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.qr_code_2, size: 100, color: Color(0xFF9E9E9E)), // 🔘
+                        Icon(Icons.qr_code_2, size: 100, color: Colors.black54), // 🔵 เปลี่ยนเป็นสีเดียวกับเมนูล่าง
                         SizedBox(height: 8),
                         Text('PromptPay QR',
-                            style: TextStyle(fontSize: 12, color: Color(0xFF9E9E9E))), // 🔵 คืนค่าเป็นตัวธรรมดาสีเทาตามสั่งแล้วครับ
+                            style: TextStyle(fontSize: 12, color: Colors.black54)), // 🔵 เปลี่ยนเป็นสีเดียวกับเมนูล่าง
                       ],
                     ),
                   ),
                   const SizedBox(height: 12),
                   Text('฿${b.totalAmount}',
                       style: const TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF9E9E9E))), // 🔘
+                          fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black54)), // 🔵 เปลี่ยนเป็นสีเดียวกับเมนูล่าง
                 ]),
               ),
               const SizedBox(height: 24),
@@ -198,8 +197,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: const TextStyle(color: Color(0xFF9E9E9E), fontSize: 14)), // 🔘
-        Text(value, style: const TextStyle(color: Color(0xFF9E9E9E), fontSize: 14, fontWeight: FontWeight.bold)), // 🔵 เปลี่ยนเป็นสีเทาเดิม ขนาดเท่าฝั่งซ้าย แต่หนาขึ้นอ่านง่ายตามบรีฟครับ
+        Text(label, style: const TextStyle(color: Colors.black54, fontSize: 14)), // 🔵 เปลี่ยนเป็นสีเดียวกับเมนูล่าง
+        Text(value, style: const TextStyle(color: Colors.black54, fontSize: 14, fontWeight: FontWeight.bold)), // 🔵 สีเทาเข้มแบบตัวหนาตามบรีฟข้อแรก
       ],
     ),
   );
@@ -218,7 +217,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           border: Border.all(
             color: _method == value
                 ? const Color(0xFF228B22) 
-                : const Color(0xFF9E9E9E), // 🔘
+                : Colors.black26, 
             width: _method == value ? 2 : 1,
           ),
           color: _method == value
@@ -228,20 +227,20 @@ class _PaymentScreenState extends State<PaymentScreen> {
         child: Row(children: [
           Icon(icon,
               color: _method == value
-                  ? const Color(0xFF228B22) : const Color(0xFF9E9E9E)), // 🔘
+                  ? const Color(0xFF228B22) : Colors.black54), // 🔵 เปลี่ยนเป็นสีเดียวกับเมนูล่างเมื่อไม่เลือก
           const SizedBox(width: 12),
           Expanded(child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(label,
                   style: TextStyle(
-                      fontWeight: FontWeight.bold, // 🔵 ปรับข้อความหัวข้อตรงกรอบเลือกวิธีชำระเงินให้หนาขึ้นตามสั่งแล้วครับ
-                      fontSize: 16,
+                      fontWeight: FontWeight.bold, 
+                      fontSize: 14,
                       color: _method == value
-                          ? const Color(0xFF228B22) : const Color(0xFF9E9E9E))), // 🔘
+                          ? const Color(0xFF228B22) : Colors.black54)), // 🔵 เปลี่ยนเป็นสีเดียวกับเมนูล่างเมื่อไม่เลือก
               Text(subLabel,
                   style: const TextStyle(
-                      fontSize: 11, color: Color(0xFF9E9E9E))), // 🔘
+                      fontSize: 11, color: Colors.black54)), // 🔵 เปลี่ยนเป็นสีเดียวกับเมนูล่าง
             ],
           )),
           if (_method == value)
