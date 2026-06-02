@@ -252,10 +252,25 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   String _duration(DateTime start, DateTime end) {
     final diff = end.difference(start);
-    final h = diff.inHours;
+    final totalHours = diff.inHours;
     final m = diff.inMinutes % 60;
-    if (h == 0) return '$m นาที';
-    if (m == 0) return '$h ชั่วโมง';
-    return '$h ชั่วโมง $m นาที';
+
+    // 🌟 เงื่อนไขใหม่: ถ้าจองตั้งแต่ 24 ชั่วโมงเป็นต้นไป ให้แตกยอดเป็น "วัน"
+    if (totalHours >= 24) {
+      final d = diff.inDays;          // หาจำนวนวันเต็มๆ
+      final h = totalHours % 24;      // หาเศษชั่วโมงที่เหลือจากวัน
+      
+      String result = '$d วัน';
+      if (h > 0) result += ' $h ชั่วโมง';
+      if (m > 0) result += ' $m นาที';
+      return result;
+    } 
+    // 🌟 ถ้าต่ำกว่า 24 ชั่วโมง ให้ใช้ตรรกะเดิม (ไม่แสดงคำว่าวัน)
+    else {
+      final h = totalHours;
+      if (h == 0) return '$m นาที';
+      if (m == 0) return '$h ชั่วโมง';
+      return '$h ชั่วโมง $m นาที';
+    }
   }
 }
