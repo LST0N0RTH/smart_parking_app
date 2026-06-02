@@ -28,7 +28,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('ชำrateเงินสำเร็จ'),
+          content: Text('ชำระเงินสำเร็จ'),
           backgroundColor: Color(0xFF228B22), // 🟢 
         ),
       );

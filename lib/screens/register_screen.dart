@@ -15,6 +15,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _password = TextEditingController();
   final _confirm  = TextEditingController();
   final _plate    = TextEditingController();
+  final _province = TextEditingController();
 
   bool _loading       = false;
   bool _showPass      = false;
@@ -25,11 +26,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() { _loading = true; _error = null; });
 
+    final plateText = _plate.text.trim();
+    final provinceText = _province.text.trim();
+    String fullLicensePlate = '';
+    
+    if (plateText.isNotEmpty) {
+      fullLicensePlate = provinceText.isNotEmpty ? "$plateText $provinceText" : plateText;
+    }
+
     final success = await context.read<ParkingProvider>().register(
       _name.text.trim(),
       _email.text.trim(),
       _password.text.trim(),
-      _plate.text.trim(),
+      fullLicensePlate,
     );
 
     if (!mounted) return;
@@ -51,7 +60,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   void dispose() {
     _name.dispose(); _email.dispose();
-    _password.dispose(); _confirm.dispose(); _plate.dispose();
+    _password.dispose(); _confirm.dispose(); 
+    _plate.dispose(); _province.dispose();
     super.dispose();
   }
 
@@ -197,18 +207,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(height: 14),
 
                       // ทะเบียนรถ (optional)
-                      TextFormField(
-                        controller: _plate,
-                        cursorColor: primaryColor,
-                        decoration: customInputDecoration('ทะเบียนรถ (ไม่บังคับ)', Icons.directions_car_outlined).copyWith(
-                          hintText: 'เช่น กข-1234',
-                          hintStyle: const TextStyle(color: secondaryGrey),
-                        ),
-                        textCapitalization: TextCapitalization.characters,
-                        textInputAction: TextInputAction.done,
-                        onFieldSubmitted: (_) => _register(),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 4,
+                            child: TextFormField(
+                              controller: _plate,
+                              cursorColor: primaryColor,
+                              decoration: customInputDecoration('ทะเบียนรถ (ไม่บังคับ)', Icons.directions_car_outlined).copyWith(
+                                hintText: 'เช่น กข-1234',
+                                hintStyle: const TextStyle(color: secondaryGrey),
+                              ),
+                              textCapitalization: TextCapitalization.characters,
+                              textInputAction: TextInputAction.next,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            flex: 3,
+                            child: TextFormField(
+                              controller: _province,
+                              cursorColor: primaryColor,
+                              decoration: customInputDecoration('จังหวัด', Icons.map_outlined),
+                              textCapitalization: TextCapitalization.words,
+                              textInputAction: TextInputAction.done,
+                              onFieldSubmitted: (_) => _register(),
+                            ),
+                          ),
+                        ],
                       ),
-
+                      
                       // Error message
                       if (_error != null) ...[
                         const SizedBox(height: 16),

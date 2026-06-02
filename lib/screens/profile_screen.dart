@@ -20,6 +20,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late TextEditingController _emailCtrl;
   
   List<TextEditingController> _plateCtrls = [];
+  List<TextEditingController> _provinceCtrls = [];
 
   @override
   void initState() {
@@ -36,10 +37,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() {
         _nameCtrl.text = provider.userName;
         _emailCtrl.text = provider.userEmail;
-        _plateCtrls = provider.userPlates.isEmpty 
-            ? [TextEditingController(text: '')] 
-            : provider.userPlates.map((p) => TextEditingController(text: p)).toList();
-            
+        _plateCtrls = [];
+        _provinceCtrls = [];
+
+        if (provider.userPlates.isEmpty) {
+          _plateCtrls.add(TextEditingController(text: ''));
+          _provinceCtrls.add(TextEditingController(text: ''));
+        } else {
+          // 🌟 วนลูปแกะป้ายทะเบียนเพื่อแยก ทะเบียน กับ จังหวัด ออกจากกัน
+          for (var currentPlate in provider.userPlates) {
+            if (currentPlate.contains(' ')) {
+              int lastSpace = currentPlate.lastIndexOf(' ');
+              _plateCtrls.add(TextEditingController(text: currentPlate.substring(0, lastSpace)));
+              _provinceCtrls.add(TextEditingController(text: currentPlate.substring(lastSpace + 1)));
+            } else {
+              _plateCtrls.add(TextEditingController(text: currentPlate));
+              _provinceCtrls.add(TextEditingController(text: ''));
+            }
+          }
+        }  
         _dataLoaded = true;
       });
     }
@@ -50,31 +66,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _nameCtrl.dispose();
     _emailCtrl.dispose();
     for (var ctrl in _plateCtrls) { ctrl.dispose(); }
+    for (var ctrl in _provinceCtrls) { ctrl.dispose(); }
     super.dispose();
   }
 
   void _addPlate() {
     if (_plateCtrls.length < 5) {
-      setState(() => _plateCtrls.add(TextEditingController()));
+      setState(() {
+        _plateCtrls.add(TextEditingController());
+        _provinceCtrls.add(TextEditingController()); // 🌟 เพิ่มช่องจังหวัดคู่กัน
+      });
     }
   }
 
   void _removePlate(int index) {
     setState(() {
       _plateCtrls[index].dispose();
+      _provinceCtrls[index].dispose();
       _plateCtrls.removeAt(index);
+      _provinceCtrls.removeAt(index);
     });
   }
 
   Future<void> _saveData() async {
     setState(() => _loading = true);
     final provider = context.read<ParkingProvider>();
-    
-    // ดึงข้อมูลจากทุกช่องที่กรอกไว้
-    final newPlates = _plateCtrls
-        .map((c) => c.text.trim())
-        .where((text) => text.isNotEmpty)
-        .toList();
+    final newPlates = <String>[];
+    for (int i = 0; i < _plateCtrls.length; i++) {
+      final plateText = _plateCtrls[i].text.trim();
+      final provinceText = _provinceCtrls[i].text.trim();
+      
+      if (plateText.isNotEmpty) {
+        if (provinceText.isNotEmpty) {
+          newPlates.add("$plateText $provinceText"); // รวมร่าง เช่น "กข1234 กรุงเทพฯ"
+        } else {
+          newPlates.add(plateText);
+        }
+      }
+    }  
 
     final success = await ApiService.updateProfile(
       _nameCtrl.text.trim(),
@@ -281,19 +310,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const SizedBox(height: 16),
                       
-                      ..._plateCtrls.asMap().entries.map((e) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _buildField(
-                          'คันที่ ${e.key + 1}', 
-                          e.value, 
-                          Icons.directions_car_outlined, 
-                          _isEditing, 
-                          suffix: _isEditing && e.key > 0 
-                              ? IconButton(icon: const Icon(Icons.remove_circle, color: Colors.red), onPressed: () => _removePlate(e.key)) 
-                              : null,
-                          textAction: e.key == _plateCtrls.length - 1 ? TextInputAction.done : TextInputAction.next
-                        ),
-                      )),
+                      ..._plateCtrls.asMap().entries.map((e) {
+                        final index = e.key;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Row(
+                            children: [
+                              // ช่องกรอกเลขทะเบียน
+                              Expanded(
+                                flex: 4,
+                                child: _buildField(
+                                  'ทะเบียนคันที่ ${index + 1}', 
+                                  _plateCtrls[index], 
+                                  Icons.directions_car_outlined, 
+                                  _isEditing,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              // ช่องกรอกจังหวัด
+                              Expanded(
+                                flex: 3,
+                                child: _buildField(
+                                  'จังหวัด', 
+                                  _provinceCtrls[index], 
+                                  Icons.map_outlined, 
+                                  _isEditing, 
+                                  suffix: _isEditing && index > 0 
+                                      ? IconButton(icon: const Icon(Icons.remove_circle, color: Colors.red), onPressed: () => _removePlate(index)) 
+                                      : null,
+                                  textAction: index == _plateCtrls.length - 1 ? TextInputAction.done : TextInputAction.next
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
 
                       if (_isEditing && _plateCtrls.length < 5)
                         TextButton.icon(
