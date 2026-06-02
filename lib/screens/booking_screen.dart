@@ -52,36 +52,13 @@ class _BookingScreenState extends State<BookingScreen> {
 
     setState(() => _loading = true);
 
-    final provider = context.read<ParkingProvider>();
-    await provider.loadBookings(); 
-
-    // เช็กจองซ้ำ
-    final isAlreadyBooked = provider.bookings.any((booking) {
-      return booking.licensePlate == _selectedPlate && 
-             booking.endTime.isAfter(DateTime.now()) &&
-             booking.status == 'active'; 
-    });
-
-    if (isAlreadyBooked) {
-      setState(() => _loading = false); 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('รถทะเบียน $_selectedPlate มีการจองค้างอยู่ในระบบแล้ว!', 
-            style: const TextStyle(fontWeight: FontWeight.bold)), 
-            backgroundColor: Colors.red
-          )
-        );
-      }
-      return; 
-    }
-
     final ok = await ApiService.createBooking(widget.slot.id, _start, _end, _selectedPlate!);
     
     if (!mounted) return;
     setState(() => _loading = false);
     
     if (ok) {
+      final provider = context.read<ParkingProvider>();
       await Future.wait([
         provider.loadSlots(),
         provider.loadBookings(), 
@@ -98,7 +75,12 @@ class _BookingScreenState extends State<BookingScreen> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('ไม่สามารถจองได้ กรุณาลองใหม่', style: TextStyle(fontWeight: FontWeight.bold)), backgroundColor: Colors.red));
+        SnackBar(
+          content: Text('รถทะเบียน $_selectedPlate มีการจองค้างอยู่ในระบบแล้ว!', 
+          style: const TextStyle(fontWeight: FontWeight.bold)), 
+          backgroundColor: Colors.red
+        )
+      );
     }
   }
 
