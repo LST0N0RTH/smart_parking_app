@@ -50,8 +50,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        title: const Text('ชำระเงิน', style: TextStyle(color: Color(0xFF0000CD))), // 🔘 น้ำเงิน
-        iconTheme: const IconThemeData(color: Color(0xFFFFFFFF)),
+        title: const Text('ชำระเงิน', style: TextStyle(color: Color(0xFF0000CD), fontWeight: FontWeight.bold)), // 🔘 น้ำเงิน
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: const Color(0xFF0000CD), // 🔵 ใช้สีน้ำเงินเดียวกันกับข้อความหัวข้อตามสั่ง
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -63,10 +67,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: const Color(0xFF0000CD).withOpacity(0.08), 
+                color: const Color(0xFF0000CD).withValues(alpha: 0.08), 
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                    color: const Color(0xFF0000CD).withOpacity(0.3)), 
+                    color: const Color(0xFF0000CD).withValues(alpha: 0.3)), 
               ),
               child: Column(children: [
                 const Text('สรุปค่าจอดรถ',
@@ -100,15 +104,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
             const SizedBox(height: 10),
 
             _methodTile(
-              value:   'promptpay',
-              label:   'PromptPay QR',
+              value:    'promptpay',
+              label:    'PromptPay QR',
               subLabel: 'สแกน QR Code ผ่านแอปธนาคาร',
               icon:    Icons.qr_code,
             ),
             const SizedBox(height: 8),
             _methodTile(
-              value:   'cash',
-              label:   'เงินสด',
+              value:    'cash',
+              label:    'เงินสด',
               subLabel: 'ชำระที่จุดรับเงิน',
               icon:    Icons.payments_outlined,
             ),
@@ -141,8 +145,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         Icon(Icons.qr_code_2, size: 100, color: Color(0xFF9E9E9E)), // 🔘
                         SizedBox(height: 8),
                         Text('PromptPay QR',
-                            style: TextStyle(fontSize: 12,
-                                color: Color(0xFF9E9E9E))), // 🔘
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87)), // 🔴 ปรับตัวหนาอ่านง่ายขึ้นตามสั่ง
                       ],
                     ),
                   ),
@@ -173,6 +176,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   backgroundColor: const Color(0xFF0000CD), 
                   padding: const EdgeInsets.symmetric(vertical: 14)),
             ),
+
+            const SizedBox(height: 12),
+
+            TextButton(
+              onPressed: _loading ? null : () => Navigator.pop(context),
+              child: const Text(
+                'ยกเลิกรายการชำระเงิน',
+                style: TextStyle(color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
+              ),
+            ),
           ],
         ),
       ),
@@ -185,8 +198,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label, style: const TextStyle(color: Color(0xFF9E9E9E), fontSize: 13)), // 🔘
-        Text(value, style: const TextStyle(color: Color(0xFF9E9E9E), fontSize: 13, // 🔘
-            fontWeight: FontWeight.w500)),
+        Text(value, style: const TextStyle(color: Colors.black87, fontSize: 14, fontWeight: FontWeight.bold)), // 🔴 ปรับสีเข้ม ตัวหนา และใหญ่ขึ้นเพื่อความชัดเจน
       ],
     ),
   );
@@ -209,7 +221,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             width: _method == value ? 2 : 1,
           ),
           color: _method == value
-              ? const Color(0xFF228B22).withOpacity(0.06) 
+              ? const Color(0xFF228B22).withValues(alpha: 0.06) 
               : null,
         ),
         child: Row(children: [
