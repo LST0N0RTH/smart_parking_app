@@ -206,7 +206,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       const SizedBox(height: 14),
 
-                      // ทะเบียนรถ (optional)
+                      // ทะเบียนรถ 
                       Row(
                         children: [
                           Expanded(
