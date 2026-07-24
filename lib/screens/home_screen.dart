@@ -41,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ParkingProvider>();
+    
 
     return Scaffold(
       appBar: AppBar(
@@ -100,21 +101,47 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildHome(ParkingProvider provider) {
+    final slots = provider.slots;
+    final availableCount = slots.where((s) => s.isAvailable).length;
+    final totalCount = slots.isNotEmpty ? slots.length : 3;
     return Column(
       children: [
-        Container(
-          width: double.infinity,
-          color: const Color(0xFF0000CD),
-          padding: const EdgeInsets.symmetric(vertical: 18),
-          child: Text(
-            'ว่าง ${provider.availableCount} / ${provider.slots.length} ช่อง',
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.white, 
-              fontSize: 20, 
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.8, 
-            ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Row(
+                children: [
+                  Icon(Icons.local_parking, color: Color(0xFF0000CD), size: 28),
+                  SizedBox(width: 8),
+                  Text(
+                    'ช่องจอด M, N, O',
+                    style: TextStyle(
+                      color: Color(0xFF0000CD),
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0000CD).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFF0000CD)),
+                ),
+                child: Text(
+                  '${provider.availableCount}/${provider.slots.length}',
+                  style: const TextStyle(
+                    color: Color(0xFF0000CD),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         Padding(

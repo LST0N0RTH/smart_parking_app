@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../services/api_service.dart';
 import '../providers/parking_provider.dart';
 import 'payment_screen.dart';
+import 'receipt_screen.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -23,7 +24,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     });
   }
 
-  // 🌟 ใช้ฟังก์ชัน Cancel จากโค้ดปัจจุบันที่อัปเดตทั้ง Booking และ Slots
+  // ฟังก์ชัน Cancle
   Future<void> _cancel(int id) async {
     final provider = context.read<ParkingProvider>();
     final ok = await ApiService.cancelBooking(id);   
@@ -33,12 +34,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }
   }
 
-  // 🌟 ปรับสีสถานะตาม Design System ของแอป
   Color _bookingColor(String s) => switch (s) {
-    'active'    => const Color(0xFF228B22), // 🟢 สีเขียว
-    'cancelled' => const Color(0xFFCD2626), // 🔴 สีแดง
-    'completed' => const Color(0xFF0000CD), // 🔵 สีน้ำเงิน
-    _           => const Color(0xFF9E9E9E), // 🔘 สีเทา
+    'active'    => const Color(0xFF228B22),
+    'cancelled' => const Color(0xFFCD2626), 
+    'completed' => const Color(0xFF0000CD), 
+    _           => const Color(0xFF9E9E9E), 
   };
 
   String _payStatusLabel(String s) => switch (s) {
@@ -53,7 +53,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     final bookings = provider.bookings;
     final fmt      = DateFormat('dd MMM HH:mm');
 
-    // 🌟 หน้าจอโหลดข้อมูล (โค้ดปัจจุบัน)
+    // 🌟 หน้าจอโหลดข้อมูล
     if (provider.isLoading && bookings.isEmpty) {
       return const Center(child: CircularProgressIndicator(color: Color(0xFF0000CD)));
     }
@@ -63,7 +63,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5), // ⚪️ พื้นหลังสีเทาอ่อน
+      backgroundColor: const Color(0xFFF5F5F5),
       body: ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: bookings.length,
@@ -125,7 +125,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
                   const Divider(height: 18, color: Color(0xFFDCDCDC)),
 
-                  // Row ล่าง: ปุ่มต่างๆ
+                  // ปุ่มต่างๆ
                   Row(children: [
                     // ยกเลิกการจอง
                     if (b.status == 'active')

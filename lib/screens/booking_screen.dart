@@ -101,7 +101,7 @@ class _BookingScreenState extends State<BookingScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(' เลือกรถที่จะจอด', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0000CD))),
+            const Text('เลือกรถที่จะเข้าจอด', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0000CD))),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -115,7 +115,7 @@ class _BookingScreenState extends State<BookingScreen> {
                   value: _selectedPlate,
                   isExpanded: true,
                   icon: const Icon(Icons.directions_car, color: Color(0xFF0000CD)),
-                  hint: const Text('ยังไม่มีข้อมูลรถ'),
+                  hint: const Text('ไม่พบข้อมูลรถ'),
                   items: userPlates.map((plate) {
                     return DropdownMenuItem<String>(
                       value: plate,
@@ -128,7 +128,7 @@ class _BookingScreenState extends State<BookingScreen> {
             ),
             
             const SizedBox(height: 24),
-            const Text(' กำหนดเวลาเข้า-ออก', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0000CD))),
+            const Text('กำหนดเวลาเข้า-ออก', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0000CD))),
             const SizedBox(height: 8),
 
             _timeCard('เวลาเข้า', fmt.format(_start), () => _pickTime(true)),
