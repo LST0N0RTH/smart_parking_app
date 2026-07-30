@@ -105,7 +105,7 @@ class ReceiptScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
-                        'ยอดชำระทั้งสิ้น',
+                        'ยอดชำระ',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -126,6 +126,41 @@ class ReceiptScreen extends StatelessWidget {
               ),
             ),
 
+            const SizedBox(height: 32),
+
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05), 
+                    blurRadius: 10, 
+                    offset: const Offset(0, 4)
+                  )
+                ]
+              ),
+              child: Column(
+                children: [
+                  const Text('Exit Code', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87)),
+                  const SizedBox(height: 12),
+                  const Icon(Icons.qr_code_2, size: 140, color: Colors.black87), // QR Code จำลอง
+                  const SizedBox(height: 8),
+                  Text('รหัสนำออก: Exit Code-${booking.id}', style: const TextStyle(fontSize: 15, color: Colors.black87, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 16),
+                  const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'หากเกิดเหตุขัดข้องในการออกจากที่จอดรถ สามารถนำรหัสหรือ QR Code นี้แสกนที่ตู้ควบคุมบริเวณทางเข้า-ออกที่จอดรถ ขออภัยในความไม่สะดวก',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 13, color: Colors.black54, height: 1.4),
+                  ),
+                ],
+              ),
+            ),
+            
             const SizedBox(height: 32),
 
             // ปุ่มปิดหน้า

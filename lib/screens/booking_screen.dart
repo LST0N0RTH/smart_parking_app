@@ -8,6 +8,7 @@ import '../services/api_service.dart';
 class BookingScreen extends StatefulWidget {
   final Slot slot;
   const BookingScreen({super.key, required this.slot});
+
   @override
   State<BookingScreen> createState() => _BookingScreenState();
 }
@@ -65,13 +66,66 @@ class _BookingScreenState extends State<BookingScreen> {
       ]);
       
       if (!mounted) return;
-      Navigator.pop(context);
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('จอง ${widget.slot.name} สำหรับรถ $_selectedPlate สำเร็จ!', style: const TextStyle(fontWeight: FontWeight.bold)), 
-          backgroundColor: const Color(0xFF1D9E75)
-        )
+      String bookingIdStr = '-';
+      try {
+        final newBooking = provider.bookings.firstWhere(
+          (b) => b.slotId == widget.slot.id && b.status == 'active'
+        );
+        bookingIdStr = newBooking.id.toString();
+      } catch (_) {}
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            contentPadding: const EdgeInsets.all(24),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.check_circle, color: Color(0xFF1D9E75), size: 60),
+                const SizedBox(height: 12),
+                Text(
+                  'จอง ${widget.slot.name} สำหรับรถ $_selectedPlate สำเร็จ!!', 
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1D9E75)),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                const Text('Entry Code', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0000CD))),
+                const SizedBox(height: 12),
+                const Icon(Icons.qr_code_2, size: 120, color: Color(0xFF0000CD)), // จำลอง QR Code
+                const SizedBox(height: 8),
+                Text('รหัสนำเข้า: ENTRY_CODE-$bookingIdStr', style: const TextStyle(fontSize: 15, color: Color(0xFF0000CD), fontWeight: FontWeight.bold)),
+                const SizedBox(height: 16),
+                const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                const SizedBox(height: 16),
+                const Text(
+                  'หากเกิดเหตุขัดข้องในการเข้าที่จอดรถ สามารถนำรหัสหรือ QR Code นี้แสกนที่ตู้ควบคุมบริเวณทางเข้า-ออกที่จอดรถ ขออภัยในความไม่สะดวก',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 12, color: Colors.black54, height: 1.4),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () {
+                      Navigator.pop(dialogContext); 
+                      Navigator.pop(context); 
+                    },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFF0000CD),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Text('ตกลง', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

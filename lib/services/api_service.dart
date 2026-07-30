@@ -145,8 +145,8 @@ class ApiService {
         }
 
         return {
-          'name': data['name'] ?? 'ไม่ระบุชื่อ',
-          'email': data['email'] ?? 'ไม่ระบุอีเมล',
+          'name': data['name'] ?? 'โปรดระบุชื่อ',
+          'email': data['email'] ?? 'โปรดระบุอีเมล',
           'plates': userPlates,
         }; 
       }
@@ -196,6 +196,100 @@ class ApiService {
     } catch (e) {
       debugPrint('ConfirmPayment Error: $e');
       return false;
+    }
+  }
+
+  // ตรวจสอบ Admin Login
+  static Future<String> adminLogin(String username, String password) async {
+    final response = await http.post(
+      Uri.parse('$_base/admin/login'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'username': username, 'password': password}),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data.containsKey('access_token')) {
+        await saveToken(data['access_token']);
+      }
+      return data['role'];
+    } else {
+      throw Exception('ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง');
+    }
+  }
+
+  // บันทึกการทำงานอุปกรณ์ Hardware Logs
+  static Future<List<dynamic>> getHardwareLogs() async {
+    final response = await http.get(
+      Uri.parse('$_base/admin/hardware-logs'),
+      headers: await _headers(),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('ไม่พบข้อมูล');
+    }
+  }
+
+  // รายชื่อและสถานะของผู้ดูแลระบบทั้งหมด
+  static Future<List<dynamic>> getAdminList() async {
+    final response = await http.get(
+      Uri.parse('$_base/admin/list'),
+      headers: await _headers(),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('ไม่พบข้อมูล');
+    }
+  }
+
+  // เพิ่มผู้ดูแลระบบคนใหม่
+  static Future<void> addAdmin(String firstName, String lastName, String username, String password) async {
+    final response = await http.post(
+      Uri.parse('$_base/admin/add'),
+      headers: await _headers(),
+      body: jsonEncode({
+        'first_name': firstName,
+        'last_name': lastName,
+        'username': username,
+        'password': password,
+      }),
+    );
+
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+    }
+  }
+
+  static Future<Map<String, dynamic>> getAdminAnalytics() async {
+    final response = await http.get(
+      Uri.parse('$_base/admin/analytics'),
+      headers: await _headers(),
+    );
+    if (response.statusCode == 200) return jsonDecode(response.body);
+    throw Exception('ไม่พบข้อมูล');
+  }
+
+  static Future<List<dynamic>> getAllBookingsAdmin() async {
+    final response = await http.get(
+      Uri.parse('$_base/admin/bookings'),
+      headers: await _headers(),
+    );
+    if (response.statusCode == 200) return jsonDecode(response.body);
+    throw Exception('ไม่พบข้อมูล');
+  }
+
+  static Future<void> overrideServo(String action) async {
+    final response = await http.post(
+      Uri.parse('$_base/admin/override/servo'),
+      headers: await _headers(),
+      body: jsonEncode({'action': action}),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
     }
   }
 }

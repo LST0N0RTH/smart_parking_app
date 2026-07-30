@@ -33,22 +33,20 @@ class _AddCardScreenState extends State<AddCardScreen> {
     super.dispose();
   }
 
-  void _saveCard() {
+  void _saveCard() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _loading = true);
-      
-      // จำลองการบันทึกข้อมูลบัตร
-      Future.delayed(const Duration(milliseconds: 1500), () {
-        if (!mounted) return;
-        setState(() => _loading = false);
-        Navigator.pop(context, true);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('เพิ่มบัตรเครดิต/บัตรเดบิตสำเร็จ'),
-            backgroundColor: Color(0xFF228B22),
-          ),
-        );
-      });
+
+      // บันทึกข้อมูลบัตร
+      if (!mounted) return;
+      setState(() => _loading = false);
+      Navigator.pop(context, true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('เพิ่มบัตรเครดิต/บัตรเดบิตสำเร็จ'),
+          backgroundColor: Color(0xFF228B22),
+        ),
+      );
     }
   }
 

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../providers/parking_provider.dart';
 import 'login_screen.dart'; 
+import 'add_card_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -44,7 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _plateCtrls.add(TextEditingController(text: ''));
           _provinceCtrls.add(TextEditingController(text: ''));
         } else {
-          // 🌟 วนลูปแกะป้ายทะเบียนเพื่อแยก ทะเบียน กับ จังหวัด ออกจากกัน
+          // 🌟 แกะป้ายทะเบียนเพื่อแยกทะเบียนกับจังหวัดออกจากกัน
           for (var currentPlate in provider.userPlates) {
             if (currentPlate.contains(' ')) {
               int lastSpace = currentPlate.lastIndexOf(' ');
@@ -206,7 +207,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('เปลี่ยนรหัสผ่านไม่สำเร็จ'), backgroundColor: Colors.red),
+                      const SnackBar(content: Text('เปลี่ยนรหัสผ่านไม่สำเร็จ กรุณาลองใหม่อีกครั้ง'), backgroundColor: Colors.red),
                     );
                   }
                 }
@@ -245,7 +246,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('ข้อมูลบัญชี', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
+                  const Text('ข้อมูลส่วนบุุคล', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
                   FilledButton.icon(
                     onPressed: _loading ? null : (_isEditing ? _saveData : () => setState(() => _isEditing = true)), 
                     style: FilledButton.styleFrom(
@@ -261,6 +262,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: 24),
               
+              // กล่องข้อมูลส่วนตัว
               Card(
                 elevation: 3,
                 color: Colors.white,
@@ -352,6 +354,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           icon: const Icon(Icons.add, color: primaryColor), 
                           label: const Text('เพิ่มรถ', style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold))
                         ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              const Text(' ช่องทางการชำระเงิน', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
+              const SizedBox(height: 12),
+              Card(
+                elevation: 3,
+                color: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: const Icon(Icons.credit_card, color: primaryColor, size: 30),
+                        title: const Text('Visa **** 1234', style: TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: const Text('ตั้งเป็นค่าเริ่มต้น'),
+                        trailing: const Icon(Icons.check_circle, color: Color(0xFF1D9E75)),
+                        onTap: () {},
+                      ),
+                      const Divider(height: 1, indent: 60, color: secondaryGrey),
+                      ListTile(
+                        leading: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(border: Border.all(color: Colors.black26), borderRadius: BorderRadius.circular(6)),
+                          child: const Icon(Icons.add, color: Colors.black54, size: 20),
+                        ),
+                        title: const Text('เพิ่มบัตรใหม่', style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const AddCardScreen()));
+                        },
+                      ),
                     ],
                   ),
                 ),

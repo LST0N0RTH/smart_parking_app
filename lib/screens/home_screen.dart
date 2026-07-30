@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
               
               if (!context.mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('อัปเดตข้อมูลล่าสุดแล้ว')),
+                const SnackBar(content: Text('บันทึกข้อมูลล่าสุดแล้ว')),
               );
             },
           ),
@@ -93,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onDestinationSelected: (i) => setState(() => _tab = i),
         destinations: const [
           NavigationDestination(icon: Icon(Icons.local_parking), label: 'ที่จอดรถ'),
-          NavigationDestination(icon: Icon(Icons.person), label: 'ข้อมูลบัญชี'),
+          NavigationDestination(icon: Icon(Icons.person), label: 'ข้อมูลส่วนบุคคล'),
           NavigationDestination(icon: Icon(Icons.history), label: 'ประวัติ'),
         ],
       ),
@@ -101,9 +101,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildHome(ParkingProvider provider) {
-    final slots = provider.slots;
-    final availableCount = slots.where((s) => s.isAvailable).length;
-    final totalCount = slots.isNotEmpty ? slots.length : 3;
     return Column(
       children: [
         Padding(

@@ -53,7 +53,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     final bookings = provider.bookings;
     final fmt      = DateFormat('dd MMM HH:mm');
 
-    // 🌟 หน้าจอโหลดข้อมูล
+    // หน้าจอโหลดข้อมูล
     if (provider.isLoading && bookings.isEmpty) {
       return const Center(child: CircularProgressIndicator(color: Color(0xFF0000CD)));
     }
@@ -123,16 +123,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     ],
                   ),
 
-                  const Divider(height: 18, color: Color(0xFFDCDCDC)),
 
                   // ปุ่มต่างๆ
                   Row(children: [
                     // ยกเลิกการจอง
-                    if (b.status == 'active')
+                    if (b.status == 'active' && !isPaid)
                       TextButton(
                         onPressed: () => _cancel(b.id),
                         style: TextButton.styleFrom(
-                            foregroundColor: const Color(0xFFCD2626), // 🔴 สีแดง
+                            foregroundColor: const Color(0xFFCD2626), 
                             padding: EdgeInsets.zero),
                         child: const Text('ยกเลิก', style: TextStyle(fontWeight: FontWeight.bold)),
                       ),
@@ -148,28 +147,23 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         icon: const Icon(Icons.payment, size: 16, color: Color(0xFFFFFFFF)),
                         label: const Text('ชำระเงิน', style: TextStyle(color: Color(0xFFFFFFFF))),
                         style: FilledButton.styleFrom(
-                            backgroundColor: const Color(0xFF0000CD), // 🔵 สีน้ำเงิน
+                            backgroundColor: const Color(0xFF0000CD),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8)),
                       ),
 
                     // Badge ชำระแล้ว
                     if (isPaid)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF228B22).withValues(alpha: 0.1), // 🟢 
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: const Row(children: [
-                          Icon(Icons.check_circle,
-                              color: Color(0xFF228B22), size: 14), // 🟢
-                          SizedBox(width: 4),
-                          Text('ชำระแล้ว',
-                              style: TextStyle(
-                                  color: Color(0xFF228B22), fontSize: 12, fontWeight: FontWeight.bold)),
-                        ]),
+                      FilledButton.icon(
+                        onPressed: () => Navigator.push(context,
+                          MaterialPageRoute(
+                            builder: (_) => ReceiptScreen(booking: b))),
+                        icon: const Icon(Icons.receipt_long, size: 16, color: Colors.white),
+                        label: const Text('ดูใบเสร็จ', style: TextStyle(color: Colors.white)),
+                        style: FilledButton.styleFrom(
+                            backgroundColor: const Color(0xFF228B22), // 🟢 สีเขียว
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8)),
                       ),
 
                     // Badge ยกเลิกแล้ว

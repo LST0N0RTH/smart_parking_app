@@ -55,7 +55,13 @@ class ParkingProvider with ChangeNotifier {
     if (data != null) {
       _userName = data['name'] ?? 'ไม่ระบุชื่อ';
       _userEmail = data['email'] ?? 'ไม่ระบุอีเมล';
-      _userPlates = List<String>.from(data['plates'] ?? []);
+      final String? plateData = data['license_plate'];
+      if (plateData != null && plateData.isNotEmpty) {
+        _userPlates = plateData.split(',').map((e) => e.trim()).toList();
+      } else {
+        _userPlates = [];
+      }
+      
       notifyListeners();
     }
   }
@@ -96,7 +102,13 @@ class ParkingProvider with ChangeNotifier {
         if (profile != null) {
           _userName = profile['name'] ?? 'ผู้ใช้งาน';
           _userEmail = profile['email'] ?? email;
-          _userPlates = List<String>.from(profile['plates'] ?? []);
+          
+          final String? plateData = profile['license_plate'];
+          if (plateData != null && plateData.isNotEmpty) {
+            _userPlates = plateData.split(',').map((e) => e.trim()).toList();
+          } else {
+            _userPlates = [];
+          }
         }
         
         _isLoading = false;

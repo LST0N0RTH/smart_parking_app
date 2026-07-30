@@ -1,7 +1,7 @@
 class Slot {
   final int id;
   final String name;
-  final String status; // available / reserved / occupied
+  final String status;
 
   const Slot({required this.id, required this.name, required this.status});
 

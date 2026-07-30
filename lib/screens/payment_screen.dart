@@ -5,6 +5,7 @@ import '../models/booking.dart';
 import '../services/api_service.dart';
 import '../providers/parking_provider.dart';
 import 'add_card_screen.dart';
+import 'receipt_screen.dart';
 
 class PaymentScreen extends StatefulWidget {
   final Booking booking;
@@ -16,6 +17,7 @@ class PaymentScreen extends StatefulWidget {
 class _PaymentScreenState extends State<PaymentScreen> {
   String _method  = 'promptpay';
   bool   _loading = false;
+  bool   _isPaid  = false;
 
   Future<void> _pay() async {
     setState(() => _loading = true);
@@ -26,6 +28,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
     if (ok) {
       await context.read<ParkingProvider>().loadBookings();
       if (!mounted) return;
+      setState(() {
+        _isPaid = true;
+      });
+
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -173,30 +179,52 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 tilePadding: EdgeInsets.zero,
                 leading: const Icon(Icons.credit_card, color: Color(0xFF0000CD), size: 28),
                 title: const Text('บัตรเครดิต/บัตรเดบิต', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87)),
+                onExpansionChanged: _isPaid ? null : (expanded) {},
                 children: [
                   Container(
                     margin: const EdgeInsets.only(left: 40, bottom: 8, top: 8),
-                    child: ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black26, style: BorderStyle.solid),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Icon(Icons.add, color: Colors.black54, size: 20),
-                      ),
-                      title: const Text('เพิ่มบัตรใหม่', style: TextStyle(fontSize: 15, color: Colors.black87)),
-                      trailing: const Icon(Icons.chevron_right, color: Colors.black26),
-                      onTap: () {
+                    decoration: const BoxDecoration(
+                      border: Border(left: BorderSide(color: Color(0xFFE0E0E0), width: 2))
+                    ),
+                    child: Column(
+                      children: [
+                        ListTile(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                          leading: const Icon(Icons.credit_card, color: Color(0xFF0000CD), size: 28),
+                          title: const Text('Visa **** 1234', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black87)),
+                          onTap: _isPaid ? null : () {
+                            setState(() {
+                              _method = 'credit_card_1234';
+                            });
+                          },
 
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const AddCardScreen(),
+                          trailing: _method == 'credit_card_1234' 
+                              ? const Icon(Icons.check_circle, color: Color(0xFF0000CD), size: 20) 
+                              : null,
+                        ),
+
+                        // ปุ่มเพิ่มบัตรใหม่
+                        ListTile(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                          leading: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black26, style: BorderStyle.solid),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Icon(Icons.add, color: Colors.black54, size: 20),
                           ),
-                        );
-                      },
+                          title: const Text('เพิ่มบัตรเครดิต/เดบิตใหม่', style: TextStyle(fontSize: 15, color: Color(0xFF0000CD), fontWeight: FontWeight.bold)),
+                          onTap: _isPaid ? null : () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const AddCardScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   )
                 ],
@@ -205,6 +233,25 @@ class _PaymentScreenState extends State<PaymentScreen> {
             const Divider(height: 1, color: Color(0xFFE0E0E0)),
 
             const SizedBox(height: 32),
+
+            // เมื่อชำระเงินสำเร็จแล้วเปลี่ยนเป็นปุ่มใบเสร็จทันที
+            if (_isPaid)
+              FilledButton.icon(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => ReceiptScreen(booking: widget.booking)),
+                  );
+                },
+                icon: const Icon(Icons.receipt_long, color: Colors.white),
+                label: const Text('ใบเสร็จรับเงิน', style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),
+                style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF228B22), 
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))
+                ),
+              )
+            else
 
             // ปุ่มยืนยัน
             FilledButton.icon(
@@ -250,6 +297,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   Widget _bankAppOption(String bankName, String imagePath, Color tempIconColor) {
     return ListTile(
+      enabled: !_isPaid,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
       leading: CircleAvatar(
         radius: 14,
