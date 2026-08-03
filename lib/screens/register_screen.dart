@@ -139,7 +139,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         decoration: customInputDecoration('ชื่อ-นามสกุล', Icons.person_outline),
                         textInputAction: TextInputAction.next,
                         validator: (v) =>
-                            (v == null || v.trim().isEmpty) ? 'กรุณากรอกชื่อ' : null,
+                            (v == null || v.trim().isEmpty) ? 'กรุณากรอกชื่อ-นามสกุล' : null,
                       ),
                       const SizedBox(height: 14),
 
@@ -177,7 +177,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         textInputAction: TextInputAction.next,
                         validator: (v) {
                           if (v == null || v.isEmpty) return 'กรุณากรอกรหัสผ่าน';
-                          if (v.length < 6) return 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร';
+                          if (v.length < 8) return 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร';
                           return null;
                         },
                       ),
