@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../services/api_service.dart';
 
 class AddCardScreen extends StatefulWidget {
   const AddCardScreen({super.key});
@@ -33,18 +34,50 @@ class _AddCardScreenState extends State<AddCardScreen> {
     super.dispose();
   }
 
-  void _saveCard() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() => _loading = true);
+  Future<void> _saveCard() async {
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      return;
+    }
 
-      // บันทึกข้อมูลบัตร
-      if (!mounted) return;
+    FocusScope.of(context).unfocus();
+    setState(() => _loading = true);
+
+    try {
+      await ApiService.createPaymentCard(
+        cardNumber: _cardNumberCtrl.text,
+        expiryDate: _expiryCtrl.text.trim(),
+        cvv: _cvvCtrl.text.trim(),
+        holderName: _nameCtrl.text.trim(),
+      );
+
+      if (!mounted) {
+        return;
+      }
+
       setState(() => _loading = false);
       Navigator.pop(context, true);
+    } on ApiRequestException catch (error) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() => _loading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.message),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() => _loading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('เพิ่มบัตรเครดิต/บัตรเดบิตสำเร็จ'),
-          backgroundColor: Color(0xFF228B22),
+          content: Text('ไม่สามารถเพิ่มบัตรได้ กรุณาลองใหม่อีกครั้ง'),
+          backgroundColor: Colors.red,
         ),
       );
     }

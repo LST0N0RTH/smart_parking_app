@@ -9,36 +9,37 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final _formKey  = GlobalKey<FormState>();
-  final _name     = TextEditingController();
-  final _email    = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _name = TextEditingController();
+  final _username = TextEditingController();
+  final _email = TextEditingController();
   final _password = TextEditingController();
-  final _confirm  = TextEditingController();
-  final _plate    = TextEditingController();
+  final _confirm = TextEditingController();
+  final _plate = TextEditingController();
   final _province = TextEditingController();
 
-  bool _loading       = false;
-  bool _showPass      = false;
-  bool _showConfirm   = false;
+  bool _loading = false;
+  bool _showPass = false;
+  bool _showConfirm = false;
   String? _error;
 
   Future<void> _register() async {
-    if (!_formKey.currentState!.validate()) return;
-    setState(() { _loading = true; _error = null; });
+    if (_loading) return;
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
 
-    final plateText = _plate.text.trim();
-    final provinceText = _province.text.trim();
-    String fullLicensePlate = '';
-    
-    if (plateText.isNotEmpty) {
-      fullLicensePlate = provinceText.isNotEmpty ? "$plateText $provinceText" : plateText;
-    }
-
-    final success = await context.read<ParkingProvider>().register(
+    final provider = context.read<ParkingProvider>();
+    final success = await provider.register(
       _name.text.trim(),
       _email.text.trim(),
-      _password.text.trim(),
-      fullLicensePlate,
+      _password.text,
+      _plate.text.trim(),
+      username: _username.text.trim(),
+      passwordConfirmation: _confirm.text,
+      province: _province.text.trim(),
     );
 
     if (!mounted) return;
@@ -53,15 +54,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
       Navigator.pop(context);
     } else {
-      setState(() => _error = 'ไม่สามารถสมัครสมาชิกได้ อีเมลนี้อาจถูกใช้งานแล้ว');
+      setState(() =>
+          _error = provider.registrationError ?? 'ไม่สามารถสมัครสมาชิกได้ อีเมลนี้อาจถูกใช้งานแล้ว');
     }
   }
 
   @override
   void dispose() {
-    _name.dispose(); _email.dispose();
-    _password.dispose(); _confirm.dispose(); 
-    _plate.dispose(); _province.dispose();
+    _name.dispose();
+    _username.dispose();
+    _email.dispose();
+    _password.dispose();
+    _confirm.dispose();
+    _plate.dispose();
+    _province.dispose();
     super.dispose();
   }
 
@@ -71,14 +77,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
     const secondaryGrey = Color(0xFF828282);
 
     // สร้างฟังก์ชันตกแต่งช่องกรอกข้อมูล เพื่อลดความซ้ำซ้อนของโค้ด
-    InputDecoration customInputDecoration(String label, IconData icon, {Widget? suffixIcon}) {
+    InputDecoration customInputDecoration(String label, IconData icon,
+        {Widget? suffixIcon}) {
       return InputDecoration(
         labelText: label,
-        labelStyle: WidgetStateTextStyle.resolveWith((states) => 
-            states.contains(WidgetState.focused) ? const TextStyle(color: primaryColor) : const TextStyle(color: secondaryGrey)),
+        labelStyle: WidgetStateTextStyle.resolveWith((states) =>
+            states.contains(WidgetState.focused)
+                ? const TextStyle(color: primaryColor)
+                : const TextStyle(color: secondaryGrey)),
         prefixIcon: Icon(icon),
-        prefixIconColor: WidgetStateColor.resolveWith((states) => 
-            states.contains(WidgetState.focused) ? primaryColor : secondaryGrey),
+        prefixIconColor: WidgetStateColor.resolveWith((states) =>
+            states.contains(WidgetState.focused)
+                ? primaryColor
+                : secondaryGrey),
         suffixIcon: suffixIcon,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -108,9 +119,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         centerTitle: true,
         elevation: 2,
       ),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Card(
               elevation: 3,
@@ -132,14 +145,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: primaryColor)),
                       const SizedBox(height: 28),
 
-                      // ชื่อ
+                      // ชื่อ-นามสกุล
                       TextFormField(
                         controller: _name,
                         cursorColor: primaryColor,
-                        decoration: customInputDecoration('ชื่อ-นามสกุล', Icons.person_outline),
+                        decoration: customInputDecoration(
+                          'ชื่อ-นามสกุล',
+                          Icons.person_outline,
+                        ),
                         textInputAction: TextInputAction.next,
-                        validator: (v) =>
-                            (v == null || v.trim().isEmpty) ? 'กรุณากรอกชื่อ-นามสกุล' : null,
+                        validator: (value) {
+                          final name = (value ?? '').trim();
+                          if (name.isEmpty) return 'กรุณากรอกชื่อ-นามสกุล';
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 14),
+
+                      // ชื่อผู้ใช้งาน
+                      TextFormField(
+                        controller: _username,
+                        cursorColor: primaryColor,
+                        decoration: customInputDecoration(
+                          'ชื่อผู้ใช้งาน (Username)',
+                          Icons.account_circle_outlined,
+                        ),
+                        textInputAction: TextInputAction.next,
+                        validator: (value) {
+                          final username = (value ?? '').trim();
+                          if (username.isEmpty) return 'กรุณากรอกชื่อผู้ใช้งาน';
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 14),
 
@@ -150,9 +186,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         decoration: customInputDecoration('อีเมล', Icons.email_outlined),
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
-                        validator: (v) {
-                          if (v == null || v.trim().isEmpty) return 'กรุณากรอกอีเมล';
-                          if (!RegExp(r'^[\w.-]+@[\w.-]+\.\w+$').hasMatch(v.trim())) {
+                        validator: (value) {
+                          final email = (value ?? '').trim();
+                          if (email.isEmpty) return 'กรุณากรอกอีเมล';
+                          if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
+                              .hasMatch(email)) {
                             return 'รูปแบบอีเมลไม่ถูกต้อง';
                           }
                           return null;
@@ -166,18 +204,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         obscureText: !_showPass,
                         cursorColor: primaryColor,
                         decoration: customInputDecoration(
-                          'รหัสผ่าน', 
+                          'รหัสผ่าน',
                           Icons.lock_outline,
                           suffixIcon: IconButton(
-                            icon: Icon(_showPass ? Icons.visibility_off_outlined : Icons.visibility_outlined),
+                            icon: Icon(
+                              _showPass
+                                  ? Icons.visibility_off_outlined
+                                  : Icons.visibility_outlined,
+                            ),
                             color: secondaryGrey,
                             onPressed: () => setState(() => _showPass = !_showPass),
                           ),
                         ),
                         textInputAction: TextInputAction.next,
-                        validator: (v) {
-                          if (v == null || v.isEmpty) return 'กรุณากรอกรหัสผ่าน';
-                          if (v.length < 8) return 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร';
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'กรุณากรอกรหัสผ่าน';
+                          }
+                          if (value.length < 8) {
+                            return 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร';
+                          }
                           return null;
                         },
                       ),
@@ -206,7 +252,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       const SizedBox(height: 14),
 
-                      // ทะเบียนรถ 
+                      // ทะเบียนรถ
                       Row(
                         children: [
                           Expanded(
@@ -214,7 +260,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             child: TextFormField(
                               controller: _plate,
                               cursorColor: primaryColor,
-                              decoration: customInputDecoration('ทะเบียนรถ (ไม่บังคับ)', Icons.directions_car_outlined).copyWith(
+                              decoration: customInputDecoration(
+                                'ทะเบียนรถ (ไม่บังคับ)',
+                                Icons.directions_car_outlined,
+                              ).copyWith(
                                 hintText: 'เช่น กข-1234',
                                 hintStyle: const TextStyle(color: secondaryGrey),
                               ),
@@ -228,7 +277,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             child: TextFormField(
                               controller: _province,
                               cursorColor: primaryColor,
-                              decoration: customInputDecoration('จังหวัด', Icons.map_outlined),
+                              decoration: customInputDecoration(
+                                'จังหวัด (ไม่บังคับ)',
+                                Icons.map_outlined,
+                              ),
                               textCapitalization: TextCapitalization.words,
                               textInputAction: TextInputAction.done,
                               onFieldSubmitted: (_) => _register(),
@@ -254,7 +306,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ]),
                         ),
                       ],
-
                       const SizedBox(height: 32),
 
                       // ปุ่มสมัคร
@@ -274,20 +325,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               : const Text('สมัครสมาชิก', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         ),
                       ),
-
                       const SizedBox(height: 16),
 
                       // กลับไป Login
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text('มีบัญชีแล้ว? ', style: TextStyle(color: secondaryGrey)),
+                          const Text(
+                            'มีบัญชีแล้ว? ',
+                            style: TextStyle(color: secondaryGrey),
+                          ),
                           TextButton(
                             onPressed: () => Navigator.pop(context),
                             style: TextButton.styleFrom(
                               foregroundColor: primaryColor,
                             ),
-                            child: const Text('เข้าสู่ระบบ', style: TextStyle(fontWeight: FontWeight.bold)),
+                            child: const Text(
+                              'เข้าสู่ระบบ',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ],
                       ),
@@ -299,6 +355,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         ),
       ),
-    );
+      if (_loading) ...[
+        const ModalBarrier(
+          dismissible: false,
+          color: Color(0x66000000),
+        ),
+        const Center(
+          child: CircularProgressIndicator(color: primaryColor),
+        ),
+      ],
+    ],
+  ),
+);
   }
 }

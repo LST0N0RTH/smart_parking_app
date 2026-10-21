@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/parking_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'register_screen.dart';
-import 'home_screen.dart';
+import 'admin_login_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -27,30 +27,30 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
 
     try {
-      final ok = await context.read<ParkingProvider>().login(
+      final provider = context.read<ParkingProvider>();
+      final ok = await provider.login(
         _email.text.trim(),
         _password.text.trim(),
       );
-      
+
       if (!ok && mounted) {
         setState(() {
           // 🌟 2. ถ้าล็อกอินพลาด ให้บวกตัวนับเพิ่ม
-          _failedAttempts++;
-          _error = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
+          if (provider.loginError == null) _failedAttempts++;
+          _error =
+              provider.loginError ?? 'อีเมล ชื่อผู้ใช้ หรือรหัสผ่านไม่ถูกต้อง';
           _loading = false;
         });
       } else if (ok && mounted) {
         // รีเซ็ตตัวนับถ้าล็อกอินสำเร็จ
         setState(() => _failedAttempts = 0);
-        
-        // 🌟 3. เปลี่ยนหน้าแบบไม่ให้กดย้อนกลับได้
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const HomeScreen()), 
-        );
+        // _StartupGate ใน main.dart เลือกหน้า Home หรือ Admin จาก role
       }
     } catch (e) {
       if (mounted) {
@@ -263,9 +263,21 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: TextButton.styleFrom(
                             foregroundColor: primaryColor,
                           ),
-                          child: const Text('สมัครสมาชิก', style: TextStyle(fontWeight: FontWeight.bold)),
+                          child: const Text('สมัครสมาชิก',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 8),
+                    TextButton.icon(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AdminLoginScreen(),
+                        ),
+                      ),
+                      icon: const Icon(Icons.admin_panel_settings_outlined),
+                      label: const Text('เข้าสู่ระบบผู้ดูแล'),
                     ),
                   ],
                 ),

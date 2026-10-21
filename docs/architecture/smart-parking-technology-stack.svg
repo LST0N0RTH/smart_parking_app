@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-label="เทคโนโลยีที่ใช้ใน Coolkids Smart Parking">
+  <title>Technology Stack · Coolkids Smart Parking</title>
+  <desc>รายการเทคโนโลยีที่ปรากฏใน Flutter และ Python dependency manifests พร้อมบทบาทที่ยืนยันจากซอร์ส</desc>
+  <rect width="1920" height="1080" fill="#FFFFFF"/>
+  <circle cx="1850" cy="55" r="100" fill="#EAF4FF"/>
+  <circle cx="-6" cy="525" r="112" fill="#EAF4FF"/>
+  <text x="80" y="72" fill="#193C70" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="2">COOLKIDS · SMART PARKING</text>
+  <text x="80" y="158" fill="#101828" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="64" font-weight="700">Technology</text>
+  <text x="480" y="158" fill="#3B6FEA" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="64" font-weight="700">Stack</text>
+  <text x="84" y="205" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="25" font-weight="400">ชื่อเทคโนโลยี พร้อมคำอธิบายว่าแต่ละตัวทำหน้าที่อะไรในโปรเจกต์</text>
+
+  <rect x="70" y="260" width="560" height="330" rx="22" fill="#FFFFFF" stroke="#174EA6" stroke-width="4"/>
+  <path d="M100 260 H600 Q630 260 630 290 V330 H70 V290 Q70 260 100 260 Z" fill="#174EA6"/>
+  <text x="104" y="307" fill="#FFFFFF" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="27" font-weight="700">แอปมือถือ</text>
+  <text x="105" y="378" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="24" font-weight="700">Flutter · Dart</text>
+  <text x="340" y="378" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="19" font-weight="400">สร้างหน้าจอแอป</text>
+  <text x="105" y="420" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="22" font-weight="700">Provider</text>
+  <text x="340" y="420" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="19" font-weight="400">จัดการสถานะในแอป</text>
+  <text x="105" y="462" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="22" font-weight="700">http · web_socket_channel</text>
+  <text x="105" y="491" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="18" font-weight="400">เรียก API และรับการอัปเดตสด</text>
+  <text x="105" y="532" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="22" font-weight="700">SharedPreferences · qr_flutter</text>
+  <text x="105" y="561" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="18" font-weight="400">เก็บ token และแสดง QR</text>
+
+  <rect x="680" y="260" width="560" height="330" rx="22" fill="#FFFFFF" stroke="#174EA6" stroke-width="4"/>
+  <path d="M710 260 H1210 Q1240 260 1240 290 V330 H680 V290 Q680 260 710 260 Z" fill="#174EA6"/>
+  <text x="714" y="307" fill="#FFFFFF" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="27" font-weight="700">ระบบกลาง (Backend)</text>
+  <text x="715" y="378" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="24" font-weight="700">Python · FastAPI · Uvicorn</text>
+  <text x="715" y="408" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="18" font-weight="400">ภาษา · API · เว็บเซิร์ฟเวอร์</text>
+  <text x="715" y="450" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="22" font-weight="700">Pydantic · SQLAlchemy</text>
+  <text x="715" y="480" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="18" font-weight="400">ตรวจข้อมูล API · เชื่อมฐานข้อมูล</text>
+  <text x="715" y="522" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="22" font-weight="700">python-jose · Passlib · bcrypt</text>
+  <text x="715" y="552" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="18" font-weight="400">token และการแฮชรหัสผ่าน</text>
+
+  <rect x="1290" y="260" width="560" height="330" rx="22" fill="#FFFFFF" stroke="#174EA6" stroke-width="4"/>
+  <path d="M1320 260 H1820 Q1850 260 1850 290 V330 H1290 V290 Q1290 260 1320 260 Z" fill="#174EA6"/>
+  <text x="1324" y="307" fill="#FFFFFF" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="27" font-weight="700">ฐานข้อมูล</text>
+  <text x="1325" y="390" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="29" font-weight="700">PostgreSQL</text>
+  <text x="1325" y="430" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="20" font-weight="400">เก็บบัญชี การจอง ช่องจอด และข้อมูลระบบ</text>
+  <line x1="1325" y1="457" x2="1810" y2="457" stroke="#D9E2F0" stroke-width="2"/>
+  <text x="1325" y="502" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="22" font-weight="700">psycopg2-binary</text>
+  <text x="1570" y="502" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="19" font-weight="400">ตัวเชื่อม PostgreSQL</text>
+  <text x="1325" y="548" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="22" font-weight="700">SQLAlchemy</text>
+  <text x="1570" y="548" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="19" font-weight="400">ชั้นจัดการข้อมูล</text>
+
+  <rect x="260" y="650" width="650" height="300" rx="22" fill="#FFFFFF" stroke="#C2410C" stroke-width="4"/>
+  <path d="M290 650 H880 Q910 650 910 680 V720 H260 V680 Q260 650 290 650 Z" fill="#C2410C"/>
+  <text x="304" y="697" fill="#FFFFFF" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="27" font-weight="700">การสื่อสารแบบทันที</text>
+  <text x="305" y="773" fill="#9A3412" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="28" font-weight="700">MQTT · paho-mqtt</text>
+  <text x="305" y="817" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="20" font-weight="400">ส่งสถานะช่องจอด เหตุการณ์ และคำสั่งอุปกรณ์</text>
+  <text x="305" y="864" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="18" font-weight="400">ปรากฏใน backend และบริการตรวจช่องจอด</text>
+  <text x="305" y="905" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="18" font-weight="400">มี Dockerfile สำหรับ broker</text>
+
+  <rect x="1010" y="650" width="650" height="300" rx="22" fill="#FFFFFF" stroke="#C2410C" stroke-width="4"/>
+  <path d="M1040 650 H1630 Q1660 650 1660 680 V720 H1010 V680 Q1010 650 1040 650 Z" fill="#C2410C"/>
+  <text x="1054" y="697" fill="#FFFFFF" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="27" font-weight="700">ตรวจภาพช่องจอด</text>
+  <text x="1055" y="773" fill="#9A3412" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="28" font-weight="700">Python · OpenCV · NumPy</text>
+  <text x="1055" y="817" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="20" font-weight="400">อ่านภาพ Webcam และวิเคราะห์ช่อง M / N / O</text>
+  <text x="1055" y="864" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="18" font-weight="400">ส่งผลไปยังระบบกลางผ่าน MQTT</text>
+
+  <text x="80" y="1015" fill="#6B7280" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="17" font-weight="400">รายการอิงจาก pubspec.yaml และ requirements.txt; คำอธิบายหน้าที่อิงจากการเรียกใช้ในซอร์สของโปรเจกต์</text>
+</svg>
+

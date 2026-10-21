@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-label="สถาปัตยกรรมซอฟต์แวร์ Coolkids Smart Parking">
+  <title>สถาปัตยกรรมซอฟต์แวร์ Coolkids Smart Parking</title>
+  <desc>ผู้ใช้ใช้แอป Flutter ติดต่อ FastAPI ผ่าน HTTPS และรับข้อมูลสดผ่าน WebSocket; FastAPI อ่านและบันทึก PostgreSQL และแลกเปลี่ยนข้อความ MQTT กับบริการตรวจช่องจอดด้วย OpenCV</desc>
+  <rect width="1920" height="1080" fill="#FFFFFF"/>
+  <circle cx="1850" cy="55" r="100" fill="#EAF4FF"/>
+  <circle cx="-6" cy="525" r="112" fill="#EAF4FF"/>
+  <text x="80" y="72" fill="#193C70" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="2">COOLKIDS · SMART PARKING</text>
+  <text x="80" y="158" fill="#101828" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="64" font-weight="700">Software</text>
+  <text x="420" y="158" fill="#3B6FEA" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="64" font-weight="700">Architecture</text>
+  <text x="84" y="205" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="25" font-weight="400">ภาพรวมว่าแอป ระบบกลาง ฐานข้อมูล และบริการตรวจช่องจอดส่งข้อมูลถึงกันอย่างไร</text>
+
+  <rect x="66" y="330" width="270" height="190" rx="22" fill="#FFFFFF" stroke="#174EA6" stroke-width="4"/>
+  <path d="M160 376 C160 355 176 339 197 339 C218 339 234 355 234 376 C234 407 197 439 197 439 C197 439 160 407 160 376 Z" fill="#174EA6"/>
+  <circle cx="197" cy="374" r="13" fill="#FFFFFF"/>
+  <text x="201" y="473" text-anchor="middle" fill="#101828" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="27" font-weight="700">ผู้ใช้และผู้ดูแล</text>
+  <text x="201" y="503" text-anchor="middle" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="20" font-weight="400">จอง ดูสถานะ จัดการระบบ</text>
+
+  <rect x="408" y="290" width="370" height="270" rx="22" fill="#FFFFFF" stroke="#174EA6" stroke-width="4"/>
+  <path d="M438 290 H748 Q778 290 778 320 V352 H408 V320 Q408 290 438 290 Z" fill="#174EA6"/>
+  <text x="593" y="332" text-anchor="middle" fill="#FFFFFF" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="27" font-weight="700">แอป Smart Parking</text>
+  <text x="445" y="402" fill="#101828" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="24" font-weight="700">Flutter · Dart</text>
+  <text x="445" y="444" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="21" font-weight="400">ใช้จองและดูข้อมูลที่จอดรถ</text>
+  <rect x="440" y="474" width="306" height="52" rx="12" fill="#EEF5FF"/>
+  <text x="593" y="508" text-anchor="middle" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="19" font-weight="700">เก็บ access token ในเครื่อง</text>
+
+  <rect x="900" y="290" width="430" height="270" rx="22" fill="#FFFFFF" stroke="#174EA6" stroke-width="4"/>
+  <path d="M930 290 H1300 Q1330 290 1330 320 V352 H900 V320 Q900 290 930 290 Z" fill="#174EA6"/>
+  <text x="1115" y="332" text-anchor="middle" fill="#FFFFFF" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="27" font-weight="700">ระบบกลาง · FastAPI</text>
+  <text x="942" y="402" fill="#101828" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="23" font-weight="700">รับคำขอและจัดการข้อมูล</text>
+  <text x="942" y="444" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="21" font-weight="400">REST API สำหรับแอป</text>
+  <text x="942" y="482" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="21" font-weight="400">WebSocket ส่งสถานะสด</text>
+  <text x="942" y="520" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="21" font-weight="400">MQTT รับเหตุการณ์ ส่งคำสั่ง</text>
+
+  <rect x="1450" y="285" width="400" height="205" rx="22" fill="#FFFFFF" stroke="#174EA6" stroke-width="4"/>
+  <path d="M1480 285 H1820 Q1850 285 1850 315 V347 H1450 V315 Q1450 285 1480 285 Z" fill="#174EA6"/>
+  <text x="1650" y="327" text-anchor="middle" fill="#FFFFFF" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="27" font-weight="700">ฐานข้อมูล</text>
+  <text x="1650" y="400" text-anchor="middle" fill="#101828" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="27" font-weight="700">PostgreSQL</text>
+  <text x="1650" y="432" text-anchor="middle" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="20" font-weight="400">บัญชี · การจอง · ช่องจอด</text>
+  <text x="1650" y="462" text-anchor="middle" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="19" font-weight="400">รายการชำระเงิน</text>
+
+  <rect x="900" y="650" width="430" height="185" rx="22" fill="#FFFFFF" stroke="#174EA6" stroke-width="4"/>
+  <path d="M930 650 H1300 Q1330 650 1330 680 V712 H900 V680 Q900 650 930 650 Z" fill="#174EA6"/>
+  <text x="1115" y="692" text-anchor="middle" fill="#FFFFFF" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="27" font-weight="700">MQTT Broker</text>
+  <text x="1115" y="764" text-anchor="middle" fill="#101828" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="22" font-weight="700">ทางผ่านข้อความกับอุปกรณ์</text>
+  <text x="1115" y="800" text-anchor="middle" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="19" font-weight="400">สถานะจากอุปกรณ์ · คำสั่งจากระบบกลาง</text>
+
+  <rect x="405" y="650" width="405" height="185" rx="22" fill="#FFFFFF" stroke="#C2410C" stroke-width="4"/>
+  <path d="M435 650 H780 Q810 650 810 680 V712 H405 V680 Q405 650 435 650 Z" fill="#C2410C"/>
+  <text x="607" y="692" text-anchor="middle" fill="#FFFFFF" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="26" font-weight="700">บริการตรวจช่องจอด</text>
+  <text x="607" y="764" text-anchor="middle" fill="#101828" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="22" font-weight="700">Python · OpenCV · NumPy</text>
+  <text x="607" y="800" text-anchor="middle" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="19" font-weight="400">วิเคราะห์สถานะช่อง M / N / O</text>
+
+  <rect x="66" y="680" width="270" height="125" rx="22" fill="#F6FAFF" stroke="#8BA8D8" stroke-width="3"/>
+  <text x="201" y="730" text-anchor="middle" fill="#101828" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="26" font-weight="700">Webcam</text>
+  <text x="201" y="770" text-anchor="middle" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="20" font-weight="400">ภาพบริเวณช่องจอด</text>
+
+  <path d="M336 425 H396" fill="none" stroke="#3B6FEA" stroke-width="5" stroke-linecap="round"/>
+  <path d="M408 425 L392 417 L392 433 Z" fill="#3B6FEA"/>
+  <rect x="333" y="383" width="76" height="31" rx="10" fill="#FFFFFF"/>
+  <text x="371" y="406" text-anchor="middle" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="17" font-weight="700">เข้าใช้</text>
+
+  <path d="M778 390 H888" fill="none" stroke="#3B6FEA" stroke-width="5" stroke-linecap="round"/>
+  <path d="M900 390 L884 382 L884 398 Z" fill="#3B6FEA"/>
+  <rect x="790" y="350" width="95" height="31" rx="10" fill="#FFFFFF"/>
+  <text x="837" y="373" text-anchor="middle" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="17" font-weight="700">HTTPS</text>
+  <text x="835" y="426" text-anchor="middle" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="16" font-weight="400">คำขอ REST</text>
+  <path d="M900 485 H790" fill="none" stroke="#7B61A8" stroke-width="5" stroke-linecap="round"/>
+  <path d="M778 485 L794 477 L794 493 Z" fill="#7B61A8"/>
+  <rect x="787" y="495" width="98" height="30" rx="10" fill="#FFFFFF"/>
+  <text x="836" y="517" text-anchor="middle" fill="#684A96" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="16" font-weight="700">WebSocket</text>
+  <text x="836" y="546" text-anchor="middle" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="15" font-weight="400">สถานะสดกลับไปแอป</text>
+
+  <path d="M1330 355 H1438" fill="none" stroke="#3B6FEA" stroke-width="5" stroke-linecap="round"/>
+  <path d="M1450 355 L1434 347 L1434 363 Z" fill="#3B6FEA"/>
+  <rect x="1340" y="315" width="88" height="30" rx="10" fill="#FFFFFF"/>
+  <text x="1384" y="337" text-anchor="middle" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="17" font-weight="700">บันทึก</text>
+  <path d="M1450 435 H1342" fill="none" stroke="#7B61A8" stroke-width="5" stroke-linecap="round"/>
+  <path d="M1330 435 L1346 427 L1346 443 Z" fill="#7B61A8"/>
+  <rect x="1340" y="445" width="92" height="28" rx="10" fill="#FFFFFF"/>
+  <text x="1386" y="466" text-anchor="middle" fill="#684A96" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="16" font-weight="700">อ่านข้อมูล</text>
+
+  <path d="M1115 560 V638" fill="none" stroke="#3B6FEA" stroke-width="5" stroke-linecap="round"/>
+  <path d="M1115 650 L1107 634 L1123 634 Z" fill="#3B6FEA"/>
+  <path d="M1155 650 V572" fill="none" stroke="#7B61A8" stroke-width="5" stroke-linecap="round"/>
+  <path d="M1155 560 L1147 576 L1163 576 Z" fill="#7B61A8"/>
+  <rect x="1165" y="585" width="165" height="30" rx="10" fill="#FFFFFF"/>
+  <text x="1247" y="607" text-anchor="middle" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="16" font-weight="700">คำสั่ง / เหตุการณ์</text>
+
+  <path d="M810 752 H888" fill="none" stroke="#C2410C" stroke-width="5" stroke-linecap="round"/>
+  <path d="M900 752 L884 744 L884 760 Z" fill="#C2410C"/>
+  <rect x="807" y="712" width="88" height="30" rx="10" fill="#FFFFFF"/>
+  <text x="851" y="734" text-anchor="middle" fill="#9A3412" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="17" font-weight="700">MQTT</text>
+  <path d="M336 742 H393" fill="none" stroke="#C2410C" stroke-width="5" stroke-linecap="round"/>
+  <path d="M405 742 L389 734 L389 750 Z" fill="#C2410C"/>
+  <rect x="333" y="702" width="76" height="30" rx="10" fill="#FFFFFF"/>
+  <text x="371" y="724" text-anchor="middle" fill="#9A3412" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="16" font-weight="700">ภาพ</text>
+
+  <rect x="66" y="900" width="1784" height="105" rx="18" fill="#F3F7FC"/>
+  <text x="102" y="943" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="20" font-weight="700">อ่านเส้นทางข้อมูล</text>
+  <text x="102" y="978" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="19" font-weight="400">แอป ↔ ระบบกลาง: HTTPS / REST และ WebSocket   ·   ระบบกลาง ↔ ฐานข้อมูล: อ่านและบันทึก   ·   กล้อง → วิเคราะห์ช่อง → MQTT → ระบบกลาง</text>
+  <text x="80" y="1045" fill="#6B7280" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="16" font-weight="400">อ้างอิงซอร์ส: smart_parking_app/lib · smart_parking_backend/main.py, database.py, models.py · smart_parking_photo_vision/slot_vision</text>
+</svg>
+

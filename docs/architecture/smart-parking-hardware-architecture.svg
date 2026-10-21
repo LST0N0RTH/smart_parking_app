@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-label="สถาปัตยกรรมฮาร์ดแวร์และการสื่อสารของ Coolkids Smart Parking">
+  <title>Hardware Architecture · Coolkids Smart Parking</title>
+  <desc>ภาพแสดงเส้นทาง MQTT ที่ backend กำหนดระหว่างบริการกล้อง ระบบกลาง broker และอุปกรณ์ ESP32 โดยแยกชื่ออุปกรณ์ที่มีในซอร์สออกจากการต่อสายจริงที่ไม่มีหลักฐาน</desc>
+  <rect width="1920" height="1080" fill="#FFFFFF"/>
+  <circle cx="1850" cy="55" r="100" fill="#EAF4FF"/>
+  <circle cx="-6" cy="525" r="112" fill="#EAF4FF"/>
+  <text x="80" y="72" fill="#193C70" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="2">COOLKIDS · SMART PARKING</text>
+  <text x="80" y="158" fill="#101828" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="64" font-weight="700">Hardware</text>
+  <text x="435" y="158" fill="#3B6FEA" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="64" font-weight="700">Architecture</text>
+  <text x="84" y="205" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="25" font-weight="400">เส้นทางข้อความที่พบในซอร์ส พร้อมแยกให้เห็นว่าส่วนใดยังยืนยันการต่อจริงไม่ได้</text>
+
+  <rect x="70" y="300" width="310" height="165" rx="22" fill="#FFFFFF" stroke="#C2410C" stroke-width="4"/>
+  <text x="225" y="360" text-anchor="middle" fill="#101828" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="29" font-weight="700">Webcam</text>
+  <text x="225" y="402" text-anchor="middle" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="21" font-weight="400">ภาพบริเวณช่องจอด</text>
+  <rect x="440" y="280" width="360" height="205" rx="22" fill="#FFFFFF" stroke="#C2410C" stroke-width="4"/>
+  <path d="M470 280 H770 Q800 280 800 310 V350 H440 V310 Q440 280 470 280 Z" fill="#C2410C"/>
+  <text x="620" y="327" text-anchor="middle" fill="#FFFFFF" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="26" font-weight="700">บริการตรวจช่องจอด</text>
+  <text x="620" y="396" text-anchor="middle" fill="#101828" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="23" font-weight="700">Python · OpenCV</text>
+  <text x="620" y="436" text-anchor="middle" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="19" font-weight="400">วิเคราะห์ช่อง M / N / O</text>
+
+  <rect x="880" y="300" width="390" height="185" rx="22" fill="#FFFFFF" stroke="#174EA6" stroke-width="4"/>
+  <path d="M910 300 H1240 Q1270 300 1270 330 V370 H880 V330 Q880 300 910 300 Z" fill="#174EA6"/>
+  <text x="1075" y="347" text-anchor="middle" fill="#FFFFFF" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="28" font-weight="700">MQTT Broker</text>
+  <text x="1075" y="414" text-anchor="middle" fill="#101828" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="21" font-weight="700">ตัวกลางรับและส่งข้อความ</text>
+  <text x="1075" y="450" text-anchor="middle" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="17" font-weight="400">ตำแหน่ง broker มาจากค่าตั้งค่า MQTT</text>
+
+  <rect x="1390" y="250" width="460" height="335" rx="22" fill="#FFFFFF" stroke="#174EA6" stroke-width="4"/>
+  <path d="M1420 250 H1820 Q1850 250 1850 280 V320 H1390 V280 Q1390 250 1420 250 Z" fill="#174EA6"/>
+  <text x="1620" y="297" text-anchor="middle" fill="#FFFFFF" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="28" font-weight="700">ระบบกลาง · Backend</text>
+  <text x="1430" y="366" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="19" font-weight="700">รับจาก MQTT</text>
+  <text x="1430" y="399" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="17" font-weight="400">gate/event · hardware/ack</text>
+  <text x="1430" y="428" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="17" font-weight="400">hardware/heartbeat · slot/vision</text>
+  <line x1="1430" y1="448" x2="1810" y2="448" stroke="#D9E2F0" stroke-width="2"/>
+  <text x="1430" y="483" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="19" font-weight="700">ส่งไปยัง MQTT</text>
+  <text x="1430" y="516" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="17" font-weight="400">servo/command · slot/{slot}/command</text>
+  <text x="1430" y="548" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="17" font-weight="400">payment/event · gate/display</text>
+
+  <rect x="560" y="650" width="570" height="195" rx="22" fill="#FFFFFF" stroke="#174EA6" stroke-width="4"/>
+  <path d="M590 650 H1100 Q1130 650 1130 680 V720 H560 V680 Q560 650 590 650 Z" fill="#174EA6"/>
+  <text x="845" y="697" text-anchor="middle" fill="#FFFFFF" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="28" font-weight="700">ESP32-WROOM</text>
+  <text x="845" y="770" text-anchor="middle" fill="#101828" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="21" font-weight="700">Backend ระบุเป็นเป้าหมายคำสั่งสถานะช่องจอด</text>
+  <text x="845" y="810" text-anchor="middle" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="18" font-weight="400">parking/slot/{slot}/command</text>
+
+  <rect x="1260" y="650" width="570" height="195" rx="22" fill="#FFFFFF" stroke="#174EA6" stroke-width="4"/>
+  <path d="M1290 650 H1800 Q1830 650 1830 680 V720 H1260 V680 Q1260 650 1290 650 Z" fill="#174EA6"/>
+  <text x="1545" y="697" text-anchor="middle" fill="#FFFFFF" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="28" font-weight="700">ESP32-CAM</text>
+  <text x="1545" y="770" text-anchor="middle" fill="#101828" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="21" font-weight="700">Backend รับเหตุการณ์ประตูจากอุปกรณ์นี้</text>
+  <text x="1545" y="810" text-anchor="middle" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="18" font-weight="400">parking/gate/event · parking/servo/command</text>
+
+  <rect x="70" y="650" width="420" height="195" rx="22" fill="#F8FAFC" stroke="#64748B" stroke-width="3" stroke-dasharray="10 8"/>
+  <text x="280" y="704" text-anchor="middle" fill="#101828" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="24" font-weight="700">รหัสอุปกรณ์ใน Backend</text>
+  <text x="280" y="753" text-anchor="middle" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="19" font-weight="400">IR1–IR2 ทางเข้า · IR3 ปิดประตูเข้า</text>
+  <text x="280" y="790" text-anchor="middle" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="19" font-weight="400">IR4–IR5 ทางออก · IR6 ปิดประตูออก</text>
+  <text x="280" y="824" text-anchor="middle" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="17" font-weight="400">Servo · OLED · RGB_M / N / O</text>
+
+  <path d="M380 382 H428" fill="none" stroke="#C2410C" stroke-width="5" stroke-linecap="round"/>
+  <path d="M440 382 L424 374 L424 390 Z" fill="#C2410C"/>
+  <rect x="363" y="345" width="80" height="28" rx="10" fill="#FFFFFF"/>
+  <text x="403" y="366" text-anchor="middle" fill="#9A3412" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="16" font-weight="700">ภาพ</text>
+
+  <path d="M800 390 H868" fill="none" stroke="#C2410C" stroke-width="5" stroke-linecap="round"/>
+  <path d="M880 390 L864 382 L864 398 Z" fill="#C2410C"/>
+  <rect x="785" y="353" width="100" height="28" rx="10" fill="#FFFFFF"/>
+  <text x="835" y="374" text-anchor="middle" fill="#9A3412" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="16" font-weight="700">MQTT</text>
+  <text x="835" y="418" text-anchor="middle" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="15" font-weight="400">slot/vision</text>
+
+  <path d="M1270 390 H1378" fill="none" stroke="#3B6FEA" stroke-width="5" stroke-linecap="round"/>
+  <path d="M1390 390 L1374 382 L1374 398 Z" fill="#3B6FEA"/>
+  <rect x="1280" y="353" width="92" height="28" rx="10" fill="#FFFFFF"/>
+  <text x="1326" y="374" text-anchor="middle" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="16" font-weight="700">เหตุการณ์</text>
+  <path d="M1390 480 H1282" fill="none" stroke="#7B61A8" stroke-width="5" stroke-linecap="round"/>
+  <path d="M1270 480 L1286 472 L1286 488 Z" fill="#7B61A8"/>
+  <rect x="1280" y="487" width="92" height="28" rx="10" fill="#FFFFFF"/>
+  <text x="1326" y="508" text-anchor="middle" fill="#684A96" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="16" font-weight="700">คำสั่ง</text>
+
+  <path d="M970 485 V620 H845 V638" fill="none" stroke="#3B6FEA" stroke-width="5" stroke-linecap="round"/>
+  <path d="M845 650 L837 634 L853 634 Z" fill="#3B6FEA"/>
+  <rect x="805" y="575" width="220" height="30" rx="10" fill="#FFFFFF"/>
+  <text x="915" y="597" text-anchor="middle" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="16" font-weight="700">slot/{slot}/command</text>
+  <path d="M1040 650 V610 H1160 V497" fill="none" stroke="#7B61A8" stroke-width="4" stroke-linecap="round" stroke-dasharray="10 8"/>
+  <path d="M1160 485 L1152 501 L1168 501 Z" fill="#7B61A8"/>
+  <rect x="1045" y="580" width="145" height="27" rx="9" fill="#FFFFFF"/>
+  <text x="1117" y="599" text-anchor="middle" fill="#684A96" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="15" font-weight="700">ACK / heartbeat</text>
+
+  <path d="M1180 485 V605 H1545 V638" fill="none" stroke="#3B6FEA" stroke-width="5" stroke-linecap="round"/>
+  <path d="M1545 650 L1537 634 L1553 634 Z" fill="#3B6FEA"/>
+  <rect x="1320" y="590" width="240" height="30" rx="10" fill="#FFFFFF"/>
+  <text x="1440" y="612" text-anchor="middle" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="16" font-weight="700">servo/command · MQTT</text>
+
+  <path d="M1540 650 V625 H1280 V497" fill="none" stroke="#7B61A8" stroke-width="4" stroke-linecap="round" stroke-dasharray="10 8"/>
+  <path d="M1280 485 L1272 501 L1288 501 Z" fill="#7B61A8"/>
+  <rect x="1320" y="618" width="205" height="26" rx="9" fill="#FFFFFF"/>
+  <text x="1422" y="637" text-anchor="middle" fill="#684A96" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="15" font-weight="700">เหตุการณ์จากอุปกรณ์</text>
+
+  <rect x="70" y="900" width="1760" height="95" rx="18" fill="#F3F7FC"/>
+  <text x="102" y="941" fill="#174EA6" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="20" font-weight="700">ขอบเขตของภาพ</text>
+  <text x="300" y="941" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="19" font-weight="400">เส้นแสดงการสื่อสารตามหัวข้อ MQTT ในซอร์ส ไม่ได้ยืนยันสายไฟหรือวงจรระหว่างอุปกรณ์</text>
+  <text x="300" y="976" fill="#52627A" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="18" font-weight="400">กรอบเส้นประคือชื่ออุปกรณ์ที่ backend รู้จัก; ยังไม่มีซอร์ส firmware สำหรับยืนยันบทบาท/การต่อจริงครบทุกตัว</text>
+  <text x="80" y="1045" fill="#6B7280" font-family="Thonburi, 'Noto Sans Thai', Tahoma, Arial, sans-serif" font-size="16" font-weight="400">อ้างอิง: smart_parking_backend/main.py · smart_parking_photo_vision/slot_vision/slot_vision_service.py</text>
+</svg>
+

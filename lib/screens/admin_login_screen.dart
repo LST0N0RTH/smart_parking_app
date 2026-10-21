@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../services/api_service.dart';
-import 'admin_dashboard_screen.dart';
+import 'package:provider/provider.dart';
+import '../providers/parking_provider.dart';
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
@@ -13,9 +13,10 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
-  
+
   bool _isLoading = false;
   bool _obscurePassword = true;
+  int _failedAttempts = 0;
 
   @override
   void dispose() {
@@ -28,33 +29,82 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
 
-      // ตรวจสอบสิทธิ์จาก database
       try {
-        final role = await ApiService.adminLogin(_usernameCtrl.text, _passwordCtrl.text);
-        
+        final provider = context.read<ParkingProvider>();
+        final loggedIn = await provider.loginAdmin(
+          _usernameCtrl.text.trim(),
+          _passwordCtrl.text,
+        );
         if (!mounted) return;
-        setState(() => _isLoading = false);
-
-        // เชื่อม API
-        if (role == 'admin') {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const AdminDashboardScreen()));
+        setState(() {
+          _isLoading = false;
+          if (!loggedIn && provider.loginError == null) _failedAttempts++;
+        });
+        if (loggedIn) {
+          Navigator.of(context).popUntil((route) => route.isFirst);
         } else {
-          throw Exception('ไม่พบบัญชี กรุณาลองใหม่อีกครั้ง'); 
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  provider.loginError ?? 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง'),
+              backgroundColor: const Color(0xFFCD2626),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
         }
-
       } catch (e) {
         if (!mounted) return;
         setState(() => _isLoading = false);
-      
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง', style: TextStyle(fontWeight: FontWeight.bold)),
-            backgroundColor: Color(0xFFCD2626), 
+            content: Text('ไม่สามารถติดต่อระบบผู้ดูแลได้ กรุณาลองใหม่'),
+            backgroundColor: Color(0xFFCD2626),
             behavior: SnackBarBehavior.floating,
           ),
         );
       }
-    } 
+    }
+  }
+
+  Future<void> _showForgotPasswordDialog() async {
+    final emailController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('ลืมรหัสผ่าน?'),
+        content: Form(
+          key: formKey,
+          child: TextFormField(
+            controller: emailController,
+            keyboardType: TextInputType.emailAddress,
+            decoration: const InputDecoration(labelText: 'อีเมล'),
+            validator: (value) =>
+                value == null || value.trim().isEmpty ? 'กรุณากรอกอีเมล' : null,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('ยกเลิก'),
+          ),
+          FilledButton(
+            onPressed: () {
+              if (!formKey.currentState!.validate()) return;
+              Navigator.of(dialogContext).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                      'ส่งลิงก์รีเซ็ตไปยัง ${emailController.text.trim()}'),
+                ),
+              );
+            },
+            child: const Text('ตกลง'),
+          ),
+        ],
+      ),
+    );
+    emailController.dispose();
   }
 
  @override
@@ -69,25 +119,36 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Container(
-                constraints: const BoxConstraints(maxWidth: 400), 
+                constraints: const BoxConstraints(maxWidth: 400),
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 4))],
+                  boxShadow: const [
+                    BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 10,
+                        offset: Offset(0, 4))
+                  ],
                 ),
-            child: ClipRRect(
+                child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
                   child: Form(
                     key: _formKey,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.admin_panel_settings, size: 64, color: primaryColor),
+                        const Icon(Icons.admin_panel_settings,
+                            size: 64, color: primaryColor),
                         const SizedBox(height: 16),
-                        const Text('Admin Portal', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: primaryColor)),
+                        const Text('Admin Portal',
+                            style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: primaryColor)),
                         const SizedBox(height: 8),
-                        const Text('เข้าสู่ระบบสำหรับผู้ดูแลพื้นที่จอดรถ', style: TextStyle(color: Colors.black54)),
+                        const Text('เข้าสู่ระบบสำหรับผู้ดูแลพื้นที่จอดรถ',
+                            style: TextStyle(color: Colors.black54)),
                         const SizedBox(height: 32),
 
                           // ช่องกรอก Username
@@ -143,10 +204,21 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                           ),
                           const SizedBox(height: 16),
 
+                          if (_failedAttempts >= 3)
+                          const Text(
+                            'หากลืมรหัสผ่าน คุณสามารถขอรีเซ็ตทางอีเมลได้',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        TextButton(
+                          onPressed:
+                              _isLoading ? null : _showForgotPasswordDialog,
+                          child: const Text('ลืมรหัสผ่าน?'),
+                        ),
+
                           // ปุ่มกลับสู่หน้าหลัก
                           TextButton(
                             onPressed: _isLoading ? null : () => Navigator.pop(context),
-                            child: const Text('กลับสู่หน้าหลัก (สำหรับผู้ใช้งานทั่วไป)', style: TextStyle(color: Colors.black54)),
+                            child: const Text('กลับสู่หน้าหลัก (สำหรับผู้ใช้บริการ)', style: TextStyle(color: Colors.black54)),
                           )
                       ],
                     ),

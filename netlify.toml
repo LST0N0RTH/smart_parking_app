@@ -1,6 +1,11 @@
 [build]
-  command = "flutter build web"
+  command = "flutter build web --release"
   publish = "build/web"
 
 [[plugins]]
   package = "netlify-plugin-flutter"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
