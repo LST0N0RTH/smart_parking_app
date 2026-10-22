@@ -66,13 +66,13 @@ class ParkingProvider with ChangeNotifier {
   bool _isConnectingBookingSocket = false;
 
   static final Uri _bookingsWebSocketBaseUri = Uri.parse(
-    'wss://tender-mercy-production-0bf1.up.railway.app/ws/bookings',
+    'wss://coolkids-backend.onrender.com/ws/bookings',
   );
-
   int _slotReconnectAttempt = 0;
   bool _shouldKeepSlotSocketOpen = false;
+
   static final Uri _slotsWebSocketUri = Uri.parse(
-    'wss://tender-mercy-production-0bf1.up.railway.app/ws/slots',
+    'wss://coolkids-backend.onrender.com/ws/slots',
   );
 
  bool _isLoggedIn = false;

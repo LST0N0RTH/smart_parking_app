@@ -18,7 +18,7 @@ class ApiRequestException implements Exception {
 }
 
 class ApiService {
-  static const _base = 'https://tender-mercy-production-0bf1.up.railway.app';
+  static const _base = 'https://coolkids-backend.onrender.com';
 
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();

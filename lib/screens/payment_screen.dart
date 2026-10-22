@@ -20,7 +20,7 @@ class PaymentScreen extends StatefulWidget {
 }
 
 class _PaymentScreenState extends State<PaymentScreen> {
-  String _method  = 'promptpay';
+  String? _method;
   bool   _loading = false;
   bool   _isPaid  = false;
 
@@ -40,7 +40,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
   void initState() {
     super.initState();
     _loadPaymentCards();
-    _createPaymentQr();
   }
 
   @override
@@ -70,7 +69,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           _selectedPaymentCardId = null;
 
           if (_method == 'card') {
-            _method = 'promptpay';
+            _method = null;
           }
         }
       });
@@ -126,56 +125,86 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
-    Future<void> _createPaymentQr() async {
-    if (_isLoadingPaymentQr || _isReissuingPaymentQr) {
+    Future<void> _selectPromptPay() async {
+  if (!mounted) {
+    return;
+  }
+
+  setState(() {
+    _method = 'promptpay';
+  });
+
+  if (_isLoadingPaymentQr || _isReissuingPaymentQr) {
+    return;
+  }
+
+  if (_paymentQr == null) {
+    await _createPaymentQr();
+    return;
+  }
+
+  if (_isPaymentQrExpired) {
+    await _reissuePaymentQr();
+  }
+}
+
+Future<void> _createPaymentQr() async {
+  if (_isLoadingPaymentQr || _isReissuingPaymentQr) {
+    return;
+  }
+
+  setState(() {
+    _isLoadingPaymentQr = true;
+    _paymentQrError = null;
+  });
+
+  try {
+    final qr = await ApiService.createPaymentQr(widget.booking.id);
+
+    if (!mounted) {
       return;
     }
 
     setState(() {
-      _isLoadingPaymentQr = true;
+      _paymentQr = qr;
+      _isLoadingPaymentQr = false;
       _paymentQrError = null;
     });
 
-    try {
-      final qr = await ApiService.createPaymentQr(widget.booking.id);
-
-      if (!mounted) {
-        return;
-      }
-
-      setState(() {
-        _paymentQr = qr;
-        _isLoadingPaymentQr = false;
-        _paymentQrError = null;
-      });
-
-      _startPaymentQrTimer();
-    } on ApiRequestException catch (error) {
-      if (!mounted) {
-        return;
-      }
-
-      setState(() {
-        _isLoadingPaymentQr = false;
-        _paymentQrError = error.message;
-      });
-    } catch (_) {
-      if (!mounted) {
-        return;
-      }
-
-      setState(() {
-        _isLoadingPaymentQr = false;
-        _paymentQrError = 'ไม่สามารถสร้าง PromptPay QR ได้';
-      });
-    }
-  }
-
-  Future<void> _reissuePaymentQr() async {
-    if (!_isPaymentQrExpired || _isReissuingPaymentQr) {
+    _startPaymentQrTimer();
+  } on ApiRequestException catch (error) {
+    if (!mounted) {
       return;
     }
 
+    if (error.statusCode == 410) {
+      setState(() {
+        _isLoadingPaymentQr = false;
+      });
+      await _reissuePaymentQr();
+      return;
+    }
+
+    setState(() {
+      _isLoadingPaymentQr = false;
+      _paymentQrError = error.message;
+    });
+  } catch (_) {
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _isLoadingPaymentQr = false;
+      _paymentQrError = 'ไม่สามารถสร้าง PromptPay QR ได้';
+    });
+  }
+}
+
+  Future<void> _reissuePaymentQr() async {
+    if (_isReissuingPaymentQr) {
+      return;
+    }
     setState(() {
       _isReissuingPaymentQr = true;
       _paymentQrResetError = null;
@@ -187,19 +216,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
       if (!mounted) {
         return;
       }
-
       setState(() {
         _paymentQr = qr;
         _isReissuingPaymentQr = false;
         _paymentQrResetError = null;
       });
-
       _startPaymentQrTimer();
     } on ApiRequestException catch (error) {
       if (!mounted) {
         return;
       }
-
       setState(() {
         _isReissuingPaymentQr = false;
         _paymentQrResetError = error.message;
@@ -208,7 +234,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
       if (!mounted) {
         return;
       }
-
       setState(() {
         _isReissuingPaymentQr = false;
         _paymentQrResetError = 'ไม่สามารถสร้าง PromptPay QR ใหม่ได้';
@@ -287,6 +312,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
     if (isPaid) {
       return const SizedBox.shrink();
     }
+    if (_method != 'promptpay') {
+  return const Padding(
+    padding: EdgeInsets.all(16),
+    child: Text(
+      'เลือก PromptPay QR เพื่อสร้าง QR Code สำหรับชำระเงิน',
+      textAlign: TextAlign.center,
+      style: TextStyle(color: Colors.black54),
+    ),
+  );
+}
 
     if (_isLoadingPaymentQr) {
       return const Padding(
@@ -333,7 +368,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             ],
             const SizedBox(height: 8),
             TextButton.icon(
-              onPressed: _createPaymentQr,
+              onPressed: _selectPromptPay,
               icon: const Icon(Icons.refresh),
               label: const Text('กรุณาลองใหม่อีกครั้ง'),
             ),
@@ -457,7 +492,18 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   Future<void> _pay() async {
-    if (_method == 'promptpay') {
+    final method = _method;
+
+    if (method == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('กรุณาเลือกวิธีชำระเงิน'),
+          backgroundColor: Color(0xFFCD2626),
+        ),
+      );
+      return;
+    }
+    if (method == 'promptpay') {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('กรุณาสแกน PromptPay QR เพื่อยืนยันการชำระเงิน'),
@@ -466,8 +512,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       );
       return;
     }
-
-    if (_method == 'card' && _selectedPaymentCardId == null) {
+    if (method == 'card' && _selectedPaymentCardId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('กรุณาเลือกบัตรที่ต้องการชำระเงิน'),
@@ -476,27 +521,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
       );
       return;
     }
-
     setState(() => _loading = true);
 
     try {
       await ApiService.confirmPaymentWithDetails(
         bookingId: widget.booking.id,
-        method: _method,
-        paymentCardId:
-            _method == 'card' ? _selectedPaymentCardId : null,
+        method: method,
+        paymentCardId: method == 'card' ? _selectedPaymentCardId : null,
       );
-
       if (!mounted) {
         return;
       }
-
       await context.read<ParkingProvider>().loadBookings();
 
       if (!mounted) {
         return;
       }
-
       setState(() {
         _isPaid = true;
       });
@@ -632,7 +672,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     ? null
                     : (expanded) {
                         if (expanded) {
-                          setState(() => _method = 'promptpay');
+                          unawaited(_selectPromptPay());
                         }
                       },
                 children: [

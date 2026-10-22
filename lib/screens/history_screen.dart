@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../services/api_service.dart';
 import '../providers/parking_provider.dart';
+import 'booking_screen.dart' show EntryQrSection;
 import 'payment_screen.dart';
 import 'receipt_screen.dart';
 
@@ -295,6 +296,31 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             style: TextStyle(color: Color(0xFFCD2626), fontSize: 12, fontWeight: FontWeight.bold)),
                       ),
                   ]),
+                  if (b.status == 'active' &&
+                      !isPaid &&
+                      b.enteredAt == null) ...[
+                    const SizedBox(height: 8),
+                    ExpansionTile(
+                      key: PageStorageKey<String>('entry-qr-${b.id}'),
+                      tilePadding: EdgeInsets.zero,
+                      leading: const Icon(
+                        Icons.qr_code_2,
+                        color: Color(0xFF0000CD),
+                      ),
+                      title: const Text(
+                        'QR ทางเข้า',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: const Text(
+                        'ใช้ได้ก่อนเวลาเริ่มจอง 10 นาที ถึงหลังเวลาเริ่มจอง 30 นาที',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      children: [
+                        EntryQrSection(booking: b),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),

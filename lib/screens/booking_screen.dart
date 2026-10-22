@@ -200,7 +200,7 @@ class _BookingScreenState extends State<BookingScreen> {
 
     if (!mounted) return;
     _stopLoading();
-    
+
     await _showBookingSuccessDialog(booking: booking);
   }
 
@@ -306,7 +306,7 @@ Future<void> _showBookingSuccessDialog({
                 color: Color(0xFFEEEEEE),
               ),
               const SizedBox(height: 20),
-              _EntryQrSection(booking: booking),
+              EntryQrSection(booking: booking),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
@@ -618,16 +618,15 @@ enum _EntryQrDisplay {
   expired,
 }
 
-class _EntryQrSection extends StatefulWidget {
+class EntryQrSection extends StatefulWidget {
   final Booking booking;
-
-  const _EntryQrSection({required this.booking});
+  const EntryQrSection({super.key, required this.booking});
 
   @override
-  State<_EntryQrSection> createState() => _EntryQrSectionState();
+  State<EntryQrSection> createState() => _EntryQrSectionState();
 }
 
-class _EntryQrSectionState extends State<_EntryQrSection> {
+class _EntryQrSectionState extends State<EntryQrSection> {
   static const _earlyAccess = Duration(minutes: 10);
   static const _validity = Duration(minutes: 30);
   static const _primaryColor = Color(0xFF0000CD);
