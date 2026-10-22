@@ -16,6 +16,7 @@ class AdminDashboardScreen extends StatefulWidget {
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   static const _primaryColor = Color(0xFF0000CD);
   static const _successColor = Color(0xFF228B22);
+  static const _reservedColor = Color(0xFFFFC107);
   static const _warningColor = Color(0xFFE65100);
   static const _dangerColor = Color(0xFFCD2626);
 
@@ -128,7 +129,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       case 'available':
         return _successColor;
       case 'reserved':
-        return _warningColor;
+        return _reservedColor;
       case 'occupied':
         return _dangerColor;
       default:

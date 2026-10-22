@@ -125,7 +125,7 @@ class _StartupGateState extends State<_StartupGate> {
                       ),
                       const SizedBox(height: 20),
                       const Text(
-                        'Session Expired',
+                        'สิทธิ์การเข้าสู่ระบบหมดอายุ',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 24,

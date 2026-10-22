@@ -384,6 +384,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   static const Duration _overlayDelay = Duration(milliseconds: 500);
   static const Color _primaryColor = Color(0xFF0000CD);
+  static const Color _reservedColor = Color(0xFFFFC107);
 
   Timer? _overlayDelayTimer;
   int _tab = 0;
@@ -556,7 +557,7 @@ Future<void> _openSupportDialog() async {
       return const Color(0xFF228B22);
     }
     if (slot.isReserved) {
-      return const Color(0xFFE65100);
+      return _reservedColor;
     }
     return const Color(0xFFCD2626);
   }
@@ -737,7 +738,7 @@ Future<void> _openSupportDialog() async {
             children: [
               _legend(const Color(0xFF228B22), 'ว่าง'),
               const SizedBox(width: 30),
-              _legend(const Color(0xFFE65100), 'จองแล้ว'),
+              _legend(_reservedColor, 'จองแล้ว'),
               const SizedBox(width: 30),
               _legend(
                 const Color(0xFFCD2626),
