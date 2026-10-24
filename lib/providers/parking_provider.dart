@@ -65,15 +65,13 @@ class ParkingProvider with ChangeNotifier {
   bool _shouldKeepBookingSocketOpen = false;
   bool _isConnectingBookingSocket = false;
 
-  static final Uri _bookingsWebSocketBaseUri = Uri.parse(
-    'wss://coolkids-backend.onrender.com/ws/bookings',
-  );
+  static Uri get _bookingsWebSocketBaseUri =>
+    ApiService.webSocketUri('/ws/bookings');
   int _slotReconnectAttempt = 0;
   bool _shouldKeepSlotSocketOpen = false;
 
-  static final Uri _slotsWebSocketUri = Uri.parse(
-    'wss://coolkids-backend.onrender.com/ws/slots',
-  );
+  static Uri get _slotsWebSocketUri =>
+    ApiService.webSocketUri('/ws/slots');
 
  bool _isLoggedIn = false;
   bool _isLoading = false;
