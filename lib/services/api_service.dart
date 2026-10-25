@@ -212,7 +212,7 @@ static Future<bool> login(
   } catch (error) {
     debugPrint('Login Error: $error');
     throw const ApiRequestException(
-      'ไม่สามารถลงทะเบียนได้ กรุณาลองอีกครั้ง',
+      'ไม่สามารถเข้าสู่ระบบได้ กรุณาลองอีกครั้ง',
     );
   }
 }
@@ -282,7 +282,7 @@ static Future<bool> login(
             Uri.parse('$_base/slots'),
             headers: await _headers(),
           )
-          .timeout(const Duration(seconds: 3));
+          .timeout(const Duration(seconds: 10));
 
       if (res.statusCode != 200) {
         throw ApiRequestException(
