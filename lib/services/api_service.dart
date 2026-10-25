@@ -20,7 +20,7 @@ class ApiRequestException implements Exception {
 class ApiService {
   static const _base = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://coolkids-backend.onrender.com',
+    defaultValue: 'https://smart-parking-backend-h6cm.onrender.com',
   );
 
   static Uri webSocketUri(String path) {
