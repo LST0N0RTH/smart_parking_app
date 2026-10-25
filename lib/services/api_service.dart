@@ -23,33 +23,6 @@ class ApiService {
     defaultValue: 'https://smart-parking-backend-h6cm.onrender.com',
   );
 
-  static Uri webSocketUri(String path) {
-    if (!path.startsWith('/')) {
-      throw ArgumentError.value(
-        path,
-        'path',
-        'WebSocket path must begin with /',
-      );
-    }
-
-    final apiUri = Uri.parse(_base);
-    if (apiUri.host.isEmpty ||
-        (apiUri.scheme != 'http' && apiUri.scheme != 'https')) {
-      throw StateError('API_BASE_URL must be an absolute http(s) URL');
-    }
-
-    final basePath = apiUri.path.endsWith('/')
-        ? apiUri.path.substring(0, apiUri.path.length - 1)
-        : apiUri.path;
-
-    return apiUri.replace(
-      scheme: apiUri.scheme == 'https' ? 'wss' : 'ws',
-      path: '$basePath$path',
-      query: null,
-      fragment: null,
-    );
-  }
-
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
@@ -215,7 +188,7 @@ static Future<bool> login(
   } catch (error) {
     debugPrint('Login Error: $error');
     throw const ApiRequestException(
-      'ไม่สามารถติดต่อระบบเข้าสู่ระบบได้',
+      'ไม่สามารถลงทะเบียนได้ กรุณาลองอีกครั้ง',
     );
   }
 }
