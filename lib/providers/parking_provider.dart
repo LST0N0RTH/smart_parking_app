@@ -719,7 +719,7 @@ class ParkingProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-
+  
   Future<bool> register(
     String name,
     String email,
