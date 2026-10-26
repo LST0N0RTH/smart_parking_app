@@ -9,6 +9,8 @@ import '../models/booking_qr_token.dart';
 import '../models/payment_card.dart';
 import '../providers/parking_provider.dart';
 import '../services/api_service.dart';
+import '../utils/image_download_stub.dart'
+    if (dart.library.html) '../utils/image_download_web.dart';
 import 'add_card_screen.dart';
 import 'receipt_screen.dart';
 
@@ -33,6 +35,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   Timer? _paymentQrTimer;
   bool _isLoadingPaymentQr = false;
   bool _isReissuingPaymentQr = false;
+  bool _isSavingPaymentQr = false;
   String? _paymentQrError;
   String? _paymentQrResetError;
 
@@ -119,7 +122,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('เพิ่มบัตรเครดิต/บัตรเดบิตสำเร็จ!'),
+        content: Text('เพิ่มบัตรเครดิต/เดบิตสำเร็จ!'),
         backgroundColor: Color(0xFF228B22),
       ),
     );
@@ -271,7 +274,7 @@ Future<void> _createPaymentQr() async {
     return expiresAt != null && !expiresAt.isAfter(DateTime.now());
   }
 
-  String _paymentQrRemainingTime() {
+    String _paymentQrRemainingTime() {
     final expiresAt = _paymentQr?.expiresAt;
 
     if (expiresAt == null) {
@@ -288,6 +291,77 @@ Future<void> _createPaymentQr() async {
     final seconds = totalSeconds % 60;
 
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  Future<void> _savePaymentQr() async {
+    final paymentQr = _paymentQr;
+
+    if (paymentQr == null || _isPaymentQrExpired || _isSavingPaymentQr) {
+      return;
+    }
+    setState(() => _isSavingPaymentQr = true);
+
+    try {
+      const imageSize = 1024.0;
+      final painter = QrPainter(
+        data: paymentQr.qrUrl,
+        version: QrVersions.auto,
+        gapless: true,
+      );
+      final recorder = PictureRecorder();
+      final canvas = Canvas(recorder);
+
+      canvas.drawRect(
+        const Rect.fromLTWH(0, 0, imageSize, imageSize),
+        Paint()..color = Colors.white,
+      );
+      painter.paint(canvas, const Size(imageSize, imageSize));
+
+      final image = await recorder.endRecording().toImage(
+            imageSize.toInt(),
+            imageSize.toInt(),
+          );
+      final byteData = await image.toByteData(
+        format: ImageByteFormat.png,
+      );
+      image.dispose();
+
+      if (byteData == null) {
+        throw StateError('ไม่สามารถสร้างไฟล์ QR Code ได้');
+      }
+      final bytes = byteData.buffer.asUint8List(
+        byteData.offsetInBytes,
+        byteData.lengthInBytes,
+      );
+      await downloadPng(
+        bytes,
+        'promptpay-${widget.booking.bookingCode}.png',
+      );
+
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('บันทึก QR Code เรียบร้อยแล้ว'),
+          backgroundColor: Color(0xFF228B22),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('ไม่สามารถบันทึก QR Code ได้ กรุณาลองใหม่อีกครั้ง'),
+          backgroundColor: Color(0xFFCD2626),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isSavingPaymentQr = false);
+      }
+    }
   }
 
   Booking _currentBooking(ParkingProvider provider) {
@@ -468,23 +542,23 @@ Future<void> _createPaymentQr() async {
           const SizedBox(height: 16),
           const Divider(height: 1, color: Color(0xFFEEEEEE)),
           const SizedBox(height: 10),
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.save_alt_outlined,
-                size: 18,
-                color: Color(0xFF0000CD),
-              ),
-              SizedBox(width: 6),
-              Text(
-                'Save',
-                style: TextStyle(
-                  color: Color(0xFF0000CD),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
+          TextButton.icon(
+            onPressed: isExpired || _isSavingPaymentQr
+                ? null
+                : _savePaymentQr,
+            icon: _isSavingPaymentQr
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.save_alt_outlined),
+            label: Text(
+              _isSavingPaymentQr
+                  ? 'กำลังบันทึก...'
+                  : 'บันทึก QR Code',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
@@ -728,7 +802,7 @@ Future<void> _createPaymentQr() async {
                   size: 28,
                 ),
                 title: const Text(
-                  'บัตรเครดิต/บัตรเดบิต',
+                  'Credit/Debit Card',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -852,7 +926,7 @@ Future<void> _createPaymentQr() async {
                             ),
                           ),
                           title: const Text(
-                            'เพิ่มบัตรเครดิต/บัตรเดบิตใหม่',
+                            'เพิ่มบัตรใหม่',
                             style: TextStyle(
                               fontSize: 15,
                               color: Color(0xFF0000CD),

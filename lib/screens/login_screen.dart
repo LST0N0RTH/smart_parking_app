@@ -164,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       textInputAction: TextInputAction.next, 
                       cursorColor: primaryColor,
                       decoration: InputDecoration(
-                        labelText: 'อีเมล',
+                        labelText: 'Email หรือ Username',
                         labelStyle: WidgetStateTextStyle.resolveWith((states) => 
                             states.contains(WidgetState.focused) ? const TextStyle(color: primaryColor) : const TextStyle(color: secondaryGrey)),
                         prefixIcon: const Icon(Icons.email_outlined),

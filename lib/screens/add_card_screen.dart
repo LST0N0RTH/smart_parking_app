@@ -87,55 +87,96 @@ class _AddCardScreenState extends State<AddCardScreen> {
     final cardNumber = _cardNumberCtrl.text.isEmpty
         ? '0000 0000 0000 0000'
         : _cardNumberCtrl.text;
+
     final cardName = _nameCtrl.text.isEmpty
-        ? 'ชื่อเจ้าของบัตร'
+        ? 'CARD HOLDER'
         : _nameCtrl.text.toUpperCase();
+
     final expiry = _expiryCtrl.text.isEmpty
-        ? 'ดด/ปป'
+        ? 'MM/YY'
         : _expiryCtrl.text;
 
     return Container(
-      height: 200,
-      padding: const EdgeInsets.all(24),
+      height: 210,
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF0000CD), Color(0xFF4169E1)],
+          colors: [
+            Color(0xFF0000CD),
+            Color(0xFF4169E1),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         boxShadow: const [
-          BoxShadow(color: Colors.black26, blurRadius: 12, offset: Offset(0, 6)),
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 12,
+            offset: Offset(0, 6),
+          ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          const Row(
             children: [
-              const Icon(Icons.memory, color: Colors.amberAccent, size: 36),
+              Expanded(
+                child: Text(
+                  'Credit/Debit Card',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.contactless_outlined,
+                color: Colors.white,
+                size: 30,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              const Icon(
+                Icons.memory,
+                color: Colors.amberAccent,
+                size: 38,
+              ),
+              const Spacer(),
               SizedBox(
-                width: 48,
+                width: 52,
+                height: 30,
                 child: Stack(
                   children: [
                     Positioned(
-                      right: 16,
+                      left: 4,
+                      top: 3,
                       child: Container(
-                        width: 24, height: 24,
+                        width: 25,
+                        height: 25,
                         decoration: BoxDecoration(
-                          color: Colors.red.withValues(alpha: 0.8),
+                          color: Colors.red.withValues(
+                            alpha: 0.9,
+                          ),
                           shape: BoxShape.circle,
                         ),
                       ),
                     ),
                     Positioned(
-                      right: 0,
+                      right: 4,
+                      top: 3,
                       child: Container(
-                        width: 24, height: 24,
+                        width: 25,
+                        height: 25,
                         decoration: BoxDecoration(
-                          color: Colors.orange.withValues(alpha: 0.8),
+                          color: Colors.orange.withValues(
+                            alpha: 0.9,
+                          ),
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -145,43 +186,69 @@ class _AddCardScreenState extends State<AddCardScreen> {
               ),
             ],
           ),
-          Text(
-            cardNumber,
-            style: const TextStyle(
-              color: Colors.white, fontSize: 22,
-              letterSpacing: 2, fontFamily: 'Courier',
-              fontWeight: FontWeight.bold,
+          const Spacer(),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              cardNumber,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                letterSpacing: 2,
+                fontFamily: 'Courier',
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
+          const SizedBox(height: 18),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Card Holder',
-                        style: TextStyle(color: Colors.white70, fontSize: 10)),
-                    const SizedBox(height: 4),
-                    Text(cardName,
-                        style: const TextStyle(
-                            color: Colors.white, fontSize: 15,
-                            fontWeight: FontWeight.bold),
-                        overflow: TextOverflow.ellipsis),
+                    const Text(
+                      'CARD HOLDER',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 10,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      cardName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Text('Expires',
-                      style: TextStyle(color: Colors.white70, fontSize: 10)),
-                  const SizedBox(height: 4),
-                  Text(expiry,
-                      style: const TextStyle(
-                          color: Colors.white, fontSize: 15,
-                          fontWeight: FontWeight.bold)),
+                  const Text(
+                    'EXPIRES',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 10,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    expiry,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -192,61 +259,78 @@ class _AddCardScreenState extends State<AddCardScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    const primaryColor = Color(0xFF0000CD);
+    Widget build(BuildContext context) {
+      const primaryColor = Color(0xFF0000CD);
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      appBar: AppBar(
-        title: const Text(
-          'เพิ่มบัตรใหม่',
-          style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
+      return Scaffold(
+        backgroundColor: const Color(0xFFF5F5F5),
+        appBar: AppBar(
+          title: const Text(
+            'เพิ่มบัตรใหม่',
+            style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            color: primaryColor,
+            onPressed: () => Navigator.pop(context),
+          ),
+          backgroundColor: Colors.white,
+          elevation: 0,
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          color: primaryColor,
-          onPressed: () => Navigator.pop(context),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(24, 24, 24, MediaQuery.of(context).viewInsets.bottom + 24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(24, 24, 24, MediaQuery.of(context).viewInsets.bottom + 24),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
 
-                _buildCreditCardMockup(),
+                  _buildCreditCardMockup(),
 
-                const SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
-              // ข้อความแจ้งเตือนความปลอดภัย
-              Container(
+                // ข้อความแจ้งเตือนความปลอดภัย
+                Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF228B22).withValues(alpha: 0.08), 
+                    color: const Color(0xFF228B22).withValues(
+                      alpha: 0.08,
+                    ),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFF228B22).withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: const Color(0xFF228B22).withValues(
+                        alpha: 0.3,
+                      ),
+                    ),
                   ),
                   child: const Row(
                     children: [
-                      Icon(Icons.verified_user, color: Color(0xFF228B22), size: 24),
+                      Icon(
+                        Icons.verified_user,
+                        color: Color(0xFF228B22),
+                        size: 24,
+                      ),
                       SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'ข้อมูลการชำระเงินของคุณถูกเก็บรักษาเป็นความลับ',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF228B22)),
+                              'ข้อมูลการชำระเงินจะถูกเก็บรักษาเป็นความลับ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: Color(0xFF228B22),
+                              ),
                             ),
                             SizedBox(height: 2),
                             Text(
-                              'และเข้ารหัสด้วยมาตรฐานความปลอดภัยสูงสุด',
-                              style: TextStyle(fontSize: 12, color: Colors.black54),
+                              'ตามมาตรฐานการเข้ารหัสด้วยความปลอดภัยสูงสุด',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black54,
+                              ),
                             ),
                           ],
                         ),
@@ -256,148 +340,148 @@ class _AddCardScreenState extends State<AddCardScreen> {
                 ),
                 const SizedBox(height: 24),
 
-              // ช่องกรอกชื่อเจ้าของบัตร
-              TextFormField(
-                  controller: _nameCtrl,
-                  keyboardType: TextInputType.name,
-                  textInputAction: TextInputAction.done,
-                  textCapitalization: TextCapitalization.characters,
+                // ช่องกรอกชื่อเจ้าของบัตร
+                TextFormField(
+                    controller: _nameCtrl,
+                    keyboardType: TextInputType.name,
+                    textInputAction: TextInputAction.done,
+                    textCapitalization: TextCapitalization.characters,
+                    decoration: InputDecoration(
+                      labelText: 'ชื่อเจ้าของบัตร',
+                      prefixIcon: const Icon(Icons.person_outline, color: Colors.black45),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: primaryColor, width: 1.5)),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return 'กรุณากรอกชื่อเจ้าของบัตร';
+                      return null;
+                    },
+                ),
+                const SizedBox(height: 16),
+
+                // ช่องกรอกหมายเลขบัตร
+                TextFormField(
+                    controller: _cardNumberCtrl,
+                    keyboardType: TextInputType.number,
+                    textInputAction: TextInputAction.next,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(16),
+                      CustomCardNumberFormatter(),
+                    ],
                   decoration: InputDecoration(
-                    labelText: 'ชื่อเจ้าของบัตร',
-                    prefixIcon: const Icon(Icons.person_outline, color: Colors.black45),
+                    labelText: 'หมายเลขบัตร',
+                    hintText: '0000 0000 0000 0000',
+                    prefixIcon: const Icon(Icons.credit_card, color: Colors.black45),
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                     focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: primaryColor, width: 1.5)),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty) return 'กรุณากรอกชื่อเจ้าของบัตร';
+                    if (value == null || value.isEmpty) return 'กรุณากรอกหมายเลขบัตร';
+                    if (value.replaceAll(' ', '').length < 16) return 'หมายเลขบัตรต้องมี 16 หลัก';
                     return null;
                   },
-              ),
-              const SizedBox(height: 16),
-
-              // ช่องกรอกหมายเลขบัตร
-              TextFormField(
-                  controller: _cardNumberCtrl,
-                  keyboardType: TextInputType.number,
-                  textInputAction: TextInputAction.next,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(16),
-                    CustomCardNumberFormatter(),
-                  ],
-                decoration: InputDecoration(
-                  labelText: 'หมายเลขบัตร',
-                  hintText: '0000 0000 0000 0000',
-                  prefixIcon: const Icon(Icons.credit_card, color: Colors.black45),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: primaryColor, width: 1.5)),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'กรุณากรอกหมายเลขบัตร';
-                  if (value.replaceAll(' ', '').length < 16) return 'หมายเลขบัตรต้องมี 16 หลัก';
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-              // ช่องกรอกวันหมดอายุ และ CVV
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                        controller: _expiryCtrl,
+                // ช่องกรอกวันหมดอายุ และ CVV
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                          controller: _expiryCtrl,
+                          keyboardType: TextInputType.number,
+                          textInputAction: TextInputAction.next,
+                          inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(4),
+                          CustomExpiryFormatter(),
+                        ],
+                        decoration: InputDecoration(
+                          labelText: 'วันหมดอายุ',
+                          hintText: 'ดด/ปป',
+                          labelStyle: const TextStyle(fontSize: 13), 
+                          prefixIcon: const Icon(Icons.calendar_month, color: Colors.black45, size: 20),
+                          prefixIconConstraints: const BoxConstraints(minWidth: 36, minHeight: 0),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: primaryColor, width: 1.5)),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return 'กรุณากรอกวันหมดอายุ';
+                          if (!value.contains('/') || value.length < 5) return 'รูปแบบไม่ถูกต้อง';
+                          return null;
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+
+                    Expanded(
+                      child: TextFormField(
+                        controller: _cvvCtrl,
                         keyboardType: TextInputType.number,
                         textInputAction: TextInputAction.next,
+                        obscureText: true,
                         inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(4),
-                        CustomExpiryFormatter(),
-                      ],
-                      decoration: InputDecoration(
-                        labelText: 'วันหมดอายุ',
-                        hintText: 'ดด/ปป',
-                        labelStyle: const TextStyle(fontSize: 13), 
-                        prefixIcon: const Icon(Icons.calendar_month, color: Colors.black45, size: 20),
-                        prefixIconConstraints: const BoxConstraints(minWidth: 36, minHeight: 0),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: primaryColor, width: 1.5)),
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(3),
+                        ],
+                        decoration: InputDecoration(
+                          labelText: 'CVV',
+                          labelStyle: const TextStyle(fontSize: 13),
+                          prefixIcon: const Icon(Icons.lock_outline, color: Colors.black45, size: 20),
+                          prefixIconConstraints: const BoxConstraints(minWidth: 36, minHeight: 0),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: primaryColor, width: 1.5)),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return 'กรุณากรอก CVV';
+                          if (value.length < 3) return 'CVV ต้องมี 3 หลัก';
+                          return null;
+                        },
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) return 'กรุณากรอกวันหมดอายุ';
-                        if (!value.contains('/') || value.length < 5) return 'รูปแบบไม่ถูกต้อง';
-                        return null;
-                      },
                     ),
-                  ),
-                  const SizedBox(width: 12),
+                  ],
+                ),
+                const SizedBox(height: 32),
 
-                  Expanded(
-                    child: TextFormField(
-                      controller: _cvvCtrl,
-                      keyboardType: TextInputType.number,
-                      textInputAction: TextInputAction.next,
-                      obscureText: true,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(3),
-                      ],
-                      decoration: InputDecoration(
-                        labelText: 'CVV',
-                        labelStyle: const TextStyle(fontSize: 13),
-                        prefixIcon: const Icon(Icons.lock_outline, color: Colors.black45, size: 20),
-                        prefixIconConstraints: const BoxConstraints(minWidth: 36, minHeight: 0),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: primaryColor, width: 1.5)),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) return 'กรุณากรอก CVV';
-                        if (value.length < 3) return 'CVV ต้องมี 3 หลัก';
-                        return null;
-                      },
+                // ปุ่มบันทึกข้อมูลบัตร
+                FilledButton(
+                    onPressed: _loading ? null : _saveCard,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
+                    child: _loading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          )
+                        : const Text(
+                          'บันทึกข้อมูล',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                          ),
                   ),
                 ],
               ),
-              const SizedBox(height: 32),
-
-              // ปุ่มบันทึกข้อมูลบัตร
-              FilledButton(
-                  onPressed: _loading ? null : _saveCard,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: primaryColor,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  child: _loading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                        )
-                      : const Text(
-                        'บันทึกข้อมูล',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                ),
-              ],
             ),
           ),
         ),
-      ),
-    );
+      );
+    }
   }
-}
 
 // รูปแบบ
 class CustomCardNumberFormatter extends TextInputFormatter {

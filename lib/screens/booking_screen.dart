@@ -36,7 +36,7 @@ class _BookingScreenState extends State<BookingScreen> {
     'mobile_banking_ธนาคารกรุงศรีอยุธยา': 'Mobile Banking • BAY',
     'mobile_banking_ธนาคารทหารไทยธนชาต': 'Mobile Banking • TTB',
     'mobile_banking_ธนาคารออมสิน': 'Mobile Banking • GSB',
-    'card': 'บัตรเครดิต/เดบิต',
+    'card': 'Credit/Debit Card',
   };
 
   @override
@@ -144,7 +144,7 @@ class _BookingScreenState extends State<BookingScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'กรุณาเพิ่มทะเบียนรถในหน้าข้อมูลส่วนบุคคลก่อนสร้างรายการจอง',
+            'กรุณาเพิ่มทะเบียนรถก่อนสร้างรายการจอง',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           backgroundColor: Colors.orange,
@@ -192,22 +192,22 @@ class _BookingScreenState extends State<BookingScreen> {
       return;
     }
     if (!mounted) return;
-
     await Future.wait([
       context.read<ParkingProvider>().loadSlots(),
       context.read<ParkingProvider>().loadBookings(),
     ]);
-
     if (!mounted) return;
     _stopLoading();
-
     await _showBookingSuccessDialog(booking: booking);
   }
 
 Future<void> _showBookingSuccessDialog({
   required Booking booking,
 }) {
-  final dateFormat = DateFormat('dd MMM yyyy HH:mm', 'th');
+  final dateFormat = DateFormat(
+    'dd MMM yyyy HH:mm',
+    'th',
+  );
   final amountFormat = NumberFormat.decimalPattern('th');
 
   return showDialog<void>(
@@ -226,18 +226,18 @@ Future<void> _showBookingSuccessDialog({
             children: [
               const Icon(
                 Icons.check_circle,
-                color: Color(0xFF1D9E75),
+                color: Color(0xFF228B22),
                 size: 60,
               ),
               const SizedBox(height: 12),
               Text(
-                'จอง ${booking.slotName} สำหรับรถ ${booking.licensePlate} สำเร็จ!',
+                'จองช่องจอด ${booking.slotName} สำเร็จ!',
+                textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1D9E75),
+                  color: Color(0xFF228B22),
                 ),
-                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
               Text(
@@ -261,7 +261,15 @@ Future<void> _showBookingSuccessDialog({
                 ),
                 child: Column(
                   children: [
-                    _bookingDetailRow('ช่องจอด', booking.slotName),
+                    _bookingDetailRow(
+                      'ช่องจอด',
+                      booking.slotName,
+                    ),
+                    const SizedBox(height: 10),
+                    _bookingDetailRow(
+                      'ทะเบียนรถ',
+                      booking.licensePlate,
+                    ),
                     const SizedBox(height: 10),
                     _bookingDetailRow(
                       'เวลาเริ่ม',
@@ -282,22 +290,12 @@ Future<void> _showBookingSuccessDialog({
               ),
               const SizedBox(height: 12),
               const Text(
-                'หากจอดเกินเวลาที่จอง จะมีค่าปรับเพิ่ม 50 บาท',
+                'หากจอดเกินระยะเวลาที่จองไว้ จะมีค่าปรับเพิ่ม 50 บาท',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Colors.red,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'เข้าจอดช้าเกินกว่าเวลาจองได้สูงสุด 30 นาที หลังจากนั้นระบบจะยกเลิกรายการจองอัตโนมัติ',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.black54,
-                  height: 1.4,
+                  color: Color(0xFFCD2626),
                 ),
               ),
               const SizedBox(height: 20),
@@ -317,7 +315,10 @@ Future<void> _showBookingSuccessDialog({
                   },
                   style: FilledButton.styleFrom(
                     backgroundColor: const Color(0xFF0000CD),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 14,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -366,7 +367,7 @@ Future<void> _showBookingSuccessDialog({
     );
   }
 
-    @override
+  @override
   Widget build(BuildContext context) {
     final fmt = DateFormat('dd MMM yyyy HH:mm', 'th');
     final userPlates = context.watch<ParkingProvider>().userPlates;
@@ -375,7 +376,7 @@ Future<void> _showBookingSuccessDialog({
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
         title: Text(
-          'จองพื้นที่จอดรถ ${widget.slot.name}',
+          'จองช่องจอดรถ ${widget.slot.name}',
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -391,7 +392,7 @@ Future<void> _showBookingSuccessDialog({
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Text(
-                'เลือกรถที่จะเข้าจอด',
+                'เลือกรถที่ต้องการเข้าจอด',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
@@ -538,7 +539,15 @@ Future<void> _showBookingSuccessDialog({
                     : () {
                         Navigator.pop(context);
                       },
-                child: const Text('ยกเลิกการจอง'),
+                style: TextButton.styleFrom(
+                  foregroundColor: const Color(0xFFCD2626),
+                ),
+                child: const Text(
+                  'ยกเลิก',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           ),
@@ -650,14 +659,19 @@ class _EntryQrSectionState extends State<EntryQrSection> {
   @override
   void initState() {
     super.initState();
-    _scheduleWindowUpdate();
 
-    if (_isWindowOpen) {
+    final now = DateTime.now();
+
+    if (now.isBefore(_availableFrom)) {
+      _display = _EntryQrDisplay.waiting;
+    } else if (now.isBefore(_expiresAt)) {
       _display = _EntryQrDisplay.loading;
       unawaited(_loadEntryQr());
-    } else if (!DateTime.now().isBefore(_expiresAt)) {
-      _display = _EntryQrDisplay.expired;
+    } else {
+      _display = _EntryQrDisplay.loading;
+      unawaited(_syncExpiredBooking());
     }
+    _scheduleWindowUpdate();
   }
 
   @override
@@ -674,11 +688,13 @@ class _EntryQrSectionState extends State<EntryQrSection> {
         : now.isBefore(_expiresAt)
             ? _expiresAt
             : null;
+
     if (nextBoundary == null) {
       return;
     }
     _windowTimer = Timer(
-      nextBoundary.difference(now) + const Duration(milliseconds: 250),
+      nextBoundary.difference(now) +
+          const Duration(milliseconds: 500),
       () {
         if (!mounted) {
           return;
@@ -686,11 +702,7 @@ class _EntryQrSectionState extends State<EntryQrSection> {
         if (_isWindowOpen) {
           unawaited(_loadEntryQr());
         } else {
-          setState(() {
-            _entryQr = null;
-            _errorMessage = null;
-            _display = _EntryQrDisplay.expired;
-          });
+          unawaited(_syncExpiredBooking());
         }
         _scheduleWindowUpdate();
       },
@@ -699,6 +711,9 @@ class _EntryQrSectionState extends State<EntryQrSection> {
 
   Future<void> _loadEntryQr() async {
     if (!_isWindowOpen) {
+      if (!DateTime.now().isBefore(_expiresAt)) {
+        await _syncExpiredBooking();
+      }
       return;
     }
     setState(() {
@@ -706,8 +721,11 @@ class _EntryQrSectionState extends State<EntryQrSection> {
       _errorMessage = null;
       _display = _EntryQrDisplay.loading;
     });
+
     try {
-      final entryQr = await ApiService.getEntryQr(widget.booking.id);
+      final entryQr = await ApiService.getEntryQr(
+        widget.booking.id,
+      );
       if (!mounted) {
         return;
       }
@@ -721,7 +739,8 @@ class _EntryQrSectionState extends State<EntryQrSection> {
       }
       setState(() {
         _entryQr = null;
-        _errorMessage = error.statusCode == 410 ? null : error.message;
+        _errorMessage =
+            error.statusCode == 410 ? null : error.message;
         _display = switch (error.statusCode) {
           425 => _EntryQrDisplay.waiting,
           410 => _EntryQrDisplay.expired,
@@ -734,9 +753,67 @@ class _EntryQrSectionState extends State<EntryQrSection> {
       }
       setState(() {
         _entryQr = null;
-        _errorMessage = 'ไม่สามารถโหลด QR ทางเข้าได้ กรุณาลองใหม่อีกครั้ง';
+        _errorMessage =
+            'ไม่สามารถโหลด QR ทางเข้าได้ กรุณาลองใหม่อีกครั้ง';
         _display = _EntryQrDisplay.unavailable;
       });
+    }
+  }
+
+  Future<void> _syncExpiredBooking() async {
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _entryQr = null;
+      _errorMessage = null;
+      _display = _EntryQrDisplay.loading;
+    });
+    try {
+      final entryQr = await ApiService.getEntryQr(
+        widget.booking.id,
+      );
+
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _entryQr = entryQr;
+        _display = _EntryQrDisplay.available;
+      });
+    } on ApiRequestException catch (error) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _entryQr = null;
+        _errorMessage =
+            error.statusCode == 410 ? null : error.message;
+        _display = switch (error.statusCode) {
+          410 => _EntryQrDisplay.expired,
+          425 => _EntryQrDisplay.waiting,
+          _ => _EntryQrDisplay.unavailable,
+        };
+      });
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _entryQr = null;
+        _errorMessage =
+            'ไม่สามารถตรวจสอบสถานะรายการจองได้ กรุณาลองใหม่อีกครั้ง';
+        _display = _EntryQrDisplay.unavailable;
+      });
+    } finally {
+      if (mounted) {
+        final provider = context.read<ParkingProvider>();
+
+        await Future.wait([
+          provider.loadBookings(),
+          provider.loadSlots(),
+        ]);
+      }
     }
   }
 
@@ -795,6 +872,12 @@ class _EntryQrSectionState extends State<EntryQrSection> {
             const SizedBox(height: 14),
             _message(
               'โปรดสแกน QR Code บริเวณทางเข้า-ออกที่จอดรถเท่านั้น',
+            ),
+            const SizedBox(height: 8),
+            _message(
+              'เข้าจอดช้าเกินกว่าเวลาจองได้สูงสุด 30 นาที '
+              'หลังจากนั้นระบบจะยกเลิกรายการจองอัตโนมัติ',
+              color: const Color(0xFF555555),
             ),
           ],
         );

@@ -108,47 +108,106 @@ class ParkingProvider with ChangeNotifier {
     );
   }
   ParkingProvider() {
+    ApiService.sessionInvalidations.addListener(
+      _handleSessionInvalidated,
+    );
     checkAuthStatus();
   }
 
-    @override
+  @override
   void dispose() {
+    ApiService.sessionInvalidations.removeListener(
+      _handleSessionInvalidated,
+    );
     _stopSlotSocket();
     _stopBookingSocket();
     super.dispose();
   }
 
+  void _handleSessionInvalidated() {
+    _resetSessionState(
+      authRestoreFailed: true,
+    );
+  }
+
+  void _resetSessionState({
+    required bool authRestoreFailed,
+  }) {
+    _stopSlotSocket();
+    _stopBookingSocket();
+
+    _bookingLoadVersion++;
+    _sessionVersion++;
+    _slotRevision++;
+
+    _bookingLoadRequest = null;
+    _bookingRefreshPending = false;
+    _isLoggedIn = false;
+    _isLoading = false;
+
+    slots = [];
+    bookings = [];
+
+    _userName = '';
+    _userUsername = '';
+    _userEmail = '';
+    _userRole = 'user';
+
+    _registrationError = null;
+    _loginError = null;
+    _authRestoreFailed = authRestoreFailed;
+    _userVehicles = [];
+
+    _slotReconnectAttempt = 0;
+    _bookingReconnectAttempt = 0;
+
+    notifyListeners();
+  }
+
   Future<void> checkAuthStatus() async {
     _isLoading = true;
     notifyListeners();
-
     try {
       final token = await ApiService.getToken();
-      if (token == null) return;
-
+      if (token == null) {
+        return;
+      }
       if (token.isEmpty) {
         _authRestoreFailed = true;
         await ApiService.clearToken();
         return;
       }
-
-      if (await fetchUserProfile(timeout: const Duration(seconds: 10))) {
-        _isLoggedIn = true;
-        _authRestoreFailed = false;
-        _startSlotSocket();
-        if (_userRole == 'user') _startBookingSocket();
-      } else {
+      final restored = await fetchUserProfile(
+        rethrowOnFailure: true,
+      );
+      if (!restored) {
         _authRestoreFailed = true;
         await ApiService.clearToken();
+        return;
+      }
+      _isLoggedIn = true;
+      _authRestoreFailed = false;
+      _startSlotSocket();
+
+      if (_userRole == 'user') {
+        _startBookingSocket();
+      }
+    } on ApiRequestException catch (error) {
+      debugPrint('Restore session error: ${error.message}');
+
+      if (error.statusCode == 401) {
+        _authRestoreFailed = true;
+        try {
+          await ApiService.clearToken();
+        } catch (clearError) {
+          debugPrint('Clear invalid token error: $clearError');
+        }
+      } else {
+        _authRestoreFailed = false;
       }
     } catch (error) {
       debugPrint('Restore session error: $error');
-      _authRestoreFailed = true;
-      try {
-        await ApiService.clearToken();
-      } catch (clearError) {
-        debugPrint('Clear invalid token error: $clearError');
-      }
+      _authRestoreFailed = false;
     } finally {
       _isLoading = false;
       _isInitialized = true;
@@ -260,39 +319,65 @@ class ParkingProvider with ChangeNotifier {
   }
 
   Future<bool> fetchUserProfile({
-    Duration timeout = const Duration(seconds: 10),
+    bool rethrowOnFailure = false,
   }) async {
-    final requestSessionVersion = _sessionVersion;
+    final requestSessionVersion =
+        _sessionVersion;
     try {
-      final data = await ApiService.getUserProfile().timeout(timeout);
-      if (requestSessionVersion != _sessionVersion) return false;
-      if (data == null ||
-          !const {'user', 'admin'}.contains(data['role']?.toString())) {
+      final data =
+          await ApiService.getUserProfile();
+      if (
+          requestSessionVersion !=
+          _sessionVersion
+      ) {
+        return false;
+      }
+      if (
+          !const {'user', 'admin'}.contains(
+            data['role']?.toString(),
+          )
+      ) {
         return false;
       }
       _applyUserProfile(data);
       notifyListeners();
       return true;
+    } on ApiRequestException catch (error) {
+      debugPrint(
+        'FetchUserProfile Error: ${error.message}',
+      );
+
+      if (rethrowOnFailure) {
+        rethrow;
+      }
+      return false;
+
     } catch (error) {
-      debugPrint('FetchUserProfile Error: $error');
+      debugPrint(
+        'FetchUserProfile Error: $error',
+      );
+
+      if (rethrowOnFailure) {
+        rethrow;
+      }
       return false;
     }
   }
 
-  Future<bool> updateUserProfile({
-    String? username,
-    List<Map<String, String>>? vehicles,
-  }) async {
-    final success = await ApiService.updateProfile(
-      _userName,
-      userPlates,
-      username: username,
-      vehicles: vehicles,
-    );
-    if (!success) return false;
-    return fetchUserProfile();
-  }
+    Future<void> updateUserProfile({
+      String? username,
+      List<Map<String, String>>? vehicles,
+    }) async {
+      final profile = await ApiService.updateProfile(
+        _userName,
+        userPlates,
+        username: username,
+        vehicles: vehicles,
+      );
 
+      _applyUserProfile(profile);
+      notifyListeners();
+    }
 
   void updateSlotStatus(String slotName, String status) {
     _slotRevision++;
@@ -401,7 +486,9 @@ class ParkingProvider with ChangeNotifier {
             statuses.keys.any(
               (name) => !slots.any((slot) => slot.name == name),
             )) {
-          unawaited(loadSlots());
+          unawaited(
+            ApiService.runInBackground(loadSlots),
+          );
           return;
         }
 
@@ -438,7 +525,9 @@ class ParkingProvider with ChangeNotifier {
         _slotRevision++;
 
         if (!slots.any((slot) => slot.name == slotName)) {
-          unawaited(loadSlots());
+          unawaited(
+            ApiService.runInBackground(loadSlots),
+          );
           return;
         }
 
@@ -490,7 +579,6 @@ class ParkingProvider with ChangeNotifier {
     if (_bookingChannel != null || _isConnectingBookingSocket) {
       return;
     }
-
     unawaited(_connectBookingSocket());
   }
 
@@ -534,7 +622,9 @@ class ParkingProvider with ChangeNotifier {
           connectionVersion == _bookingSocketVersion &&
           identical(connectedChannel, _bookingChannel)) {
         _bookingReconnectAttempt = 0;
-        unawaited(loadBookings());
+        unawaited(
+          ApiService.runInBackground(loadBookings),
+        );
       }
     } catch (error) {
       debugPrint('Booking WebSocket connection error: $error');
@@ -586,7 +676,9 @@ class ParkingProvider with ChangeNotifier {
       }
 
       _bookingReconnectAttempt = 0;
-      unawaited(loadBookings());
+      unawaited(
+        ApiService.runInBackground(loadBookings),
+      );
     } catch (error) {
       debugPrint('Invalid Booking WebSocket payload: $error');
     }
@@ -640,39 +732,58 @@ class ParkingProvider with ChangeNotifier {
   }
   int get availableCount => slots.where((s) => s.isAvailable).length;
 
-  Future<bool> login(String email, String password) async {
+Future<bool> login(
+    String email,
+    String password,
+  ) async {
     _isLoading = true;
     _loginError = null;
     notifyListeners();
 
     try {
-      final success = await ApiService.login(email, password);
-      if (!success) return false;
+      final success = await ApiService.login(
+        email,
+        password,
+      );
 
-      if (!await fetchUserProfile(timeout: const Duration(seconds: 10))) {
-        _loginError = 'ไม่พบบัญชี กรุณาลองอีกครั้ง';
+      if (!success) {
+        return false;
+      }
+
+      if (!await fetchUserProfile()) {
+        _loginError =
+            'ไม่พบบัญชี กรุณาลองอีกครั้ง';
+
         try {
-          await ApiService.logoutFromServer().timeout(
-            const Duration(seconds: 3),
-          );
+          await ApiService.logoutFromServer();
         } catch (error) {
-          debugPrint('Revoke incomplete login error: $error');
+          debugPrint(
+            'Revoke incomplete login error: $error',
+          );
         }
+
         await ApiService.clearToken();
         return false;
       }
+
       _isLoggedIn = true;
       _loginError = null;
       _authRestoreFailed = false;
+
       _startSlotSocket();
-      if (_userRole == 'user') _startBookingSocket();
+
+      if (_userRole == 'user') {
+        _startBookingSocket();
+      }
+
       return true;
     } on ApiRequestException catch (error) {
       _loginError = error.message;
       return false;
     } catch (error) {
       debugPrint('Login error: $error');
-      _loginError = 'ไม่สามารถเข้าสู่ระบบได้ กรุณาลองอีกครั้ง';
+      _loginError =
+          'ไม่สามารถเข้าสู่ระบบได้ กรุณาลองอีกครั้ง';
       return false;
     } finally {
       _isLoading = false;
@@ -680,24 +791,35 @@ class ParkingProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> loginAdmin(String identifier, String password) async {
+  Future<bool> loginAdmin(
+    String identifier,
+    String password,
+  ) async {
     _isLoading = true;
     _loginError = null;
     notifyListeners();
 
     try {
-      final role = await ApiService.adminLogin(identifier, password);
-      if (role == null) return false;
-      if (role != 'admin' ||
-          !await fetchUserProfile(timeout: const Duration(seconds: 10)) ||
-          _userRole != 'admin') {
-        _loginError = 'ไม่พบสิทธิ์ผู้ดูแลพื้นที่ กรุณาลองใหม่อีกครั้ง';
+      final role = await ApiService.adminLogin(
+        identifier,
+        password,
+      );
+      if (role == null) {
+        return false;
+      }
+      if (
+          role != 'admin' ||
+          !await fetchUserProfile() ||
+          _userRole != 'admin'
+      ) {
+        _loginError =
+            'ไม่พบสิทธิ์ผู้ดูแลพื้นที่ กรุณาลองใหม่อีกครั้ง';
         try {
-          await ApiService.logoutFromServer().timeout(
-            const Duration(seconds: 3),
-          );
+          await ApiService.logoutFromServer();
         } catch (error) {
-          debugPrint('Revoke incomplete admin login error: $error');
+          debugPrint(
+            'Revoke incomplete admin login error: $error',
+          );
         }
         await ApiService.clearToken();
         return false;
@@ -705,57 +827,61 @@ class ParkingProvider with ChangeNotifier {
       _isLoggedIn = true;
       _loginError = null;
       _authRestoreFailed = false;
+
       _startSlotSocket();
       return true;
     } on ApiRequestException catch (error) {
       _loginError = error.message;
       return false;
     } catch (error) {
-      debugPrint('Admin login error: $error');
-      _loginError = 'ไม่สามารถเข้าสู่ระบบผู้ดูแลได้ กรุณาลองใหม่';
-      return false;
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-  
-  Future<bool> register(
-    String name,
-    String email,
-    String password,
-    String plate, {
-    String? username,
-    String? passwordConfirmation,
-    String? province,
-  }) async {
-    _isLoading = true;
-    _registrationError = null;
-    _loginError = null;
-    notifyListeners();
-    
-  try {
-      return await ApiService.register(
-        name,
-        email,
-        password,
-        plate,
-        username: username,
-        passwordConfirmation: passwordConfirmation,
-        province: province,
+      debugPrint(
+        'Admin login error: $error',
       );
-    } on ApiRequestException catch (error) {
-      _registrationError = error.message;
-      return false;
-    } catch (error) {
-      debugPrint('Register error: $error');
-      _registrationError = 'ไม่สามารถเชื่อมต่อระบบสมัครสมาชิกได้';
+      _loginError =
+          'ไม่สามารถเข้าสู่ระบบผู้ดูแลได้ กรุณาลองใหม่';
       return false;
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
+    
+    Future<bool> register(
+      String name,
+      String email,
+      String password,
+      String plate, {
+      String? username,
+      String? passwordConfirmation,
+      String? province,
+    }) async {
+      _isLoading = true;
+      _registrationError = null;
+      _loginError = null;
+      notifyListeners();
+      
+    try {
+        return await ApiService.register(
+          name,
+          email,
+          password,
+          plate,
+          username: username,
+          passwordConfirmation: passwordConfirmation,
+          province: province,
+        );
+      } on ApiRequestException catch (error) {
+        _registrationError = error.message;
+        return false;
+      } catch (error) {
+        debugPrint('Register error: $error');
+        _registrationError = 'ไม่สามารถเชื่อมต่อระบบสมัครสมาชิกได้';
+        return false;
+      } finally {
+        _isLoading = false;
+        notifyListeners();
+      }
+    }
 
   Future<bool> logout() async {
     _isLoading = true;
@@ -763,9 +889,7 @@ class ParkingProvider with ChangeNotifier {
 
     bool serverConfirmed;
     try {
-      serverConfirmed = await ApiService.logoutFromServer().timeout(
-        const Duration(seconds: 10),
-      );
+      serverConfirmed = await ApiService.logoutFromServer();
     } catch (error) {
       debugPrint('Server logout error: $error');
       serverConfirmed = false;

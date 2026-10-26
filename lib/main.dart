@@ -6,6 +6,7 @@ import 'providers/parking_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/admin_dashboard_screen.dart';
+import 'services/api_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); 
@@ -20,15 +21,48 @@ Future<void> main() async {
   );
 }
 
-class SmartParkingApp extends StatelessWidget {
+class SmartParkingApp extends StatefulWidget {
   const SmartParkingApp({super.key});
 
   @override
+  State<SmartParkingApp> createState() =>
+      _SmartParkingAppState();
+}
+
+class _SmartParkingAppState
+    extends State<SmartParkingApp>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  Future<bool> didPopRoute() async {
+    if (ApiService.activity.value.isBusy) {
+      return true;
+    }
+
+    return false;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final String primaryFont = GoogleFonts.notoSerifDisplay().fontFamily!;
-    final String fallbackFont = GoogleFonts.fahkwang().fontFamily!;
+    final String primaryFont =
+        GoogleFonts.notoSerifDisplay().fontFamily!;
+
+    final String fallbackFont =
+        GoogleFonts.fahkwang().fontFamily!;
+
     final boldTextStyle = TextStyle(
-      fontWeight: FontWeight.bold, 
+      fontWeight: FontWeight.bold,
       fontFamilyFallback: [fallbackFont],
     );
 
@@ -36,11 +70,13 @@ class SmartParkingApp extends StatelessWidget {
       title: 'Coolkids Smart Parking',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0000CD)),
-        scaffoldBackgroundColor: const Color(0xFFF5F5F5),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF0000CD),
+        ),
+        scaffoldBackgroundColor:
+            const Color(0xFFF5F5F5),
         useMaterial3: true,
         fontFamily: primaryFont,
-        
         textTheme: TextTheme(
           displayLarge: boldTextStyle,
           displayMedium: boldTextStyle,
@@ -59,7 +95,74 @@ class SmartParkingApp extends StatelessWidget {
           labelSmall: boldTextStyle,
         ),
       ),
-          home: const _StartupGate(),
+      builder: (context, child) {
+        final isInitialized = context
+            .watch<ParkingProvider>()
+            .isInitialized;
+
+        return ValueListenableBuilder<
+            ApiActivityState>(
+          valueListenable: ApiService.activity,
+          child: child,
+          builder: (
+            context,
+            activity,
+            appChild,
+          ) {
+            final shouldBlock =
+                isInitialized &&
+                activity.isBusy;
+
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                appChild ??
+                    const SizedBox.shrink(),
+                if (shouldBlock) ...[
+                  const ModalBarrier(
+                    dismissible: false,
+                    color: Color(0x88000000),
+                  ),
+                  Center(
+                    child: Material(
+                      elevation: 8,
+                      color: Colors.white,
+                      borderRadius:
+                          BorderRadius.circular(12),
+                      child: Padding(
+                        padding:
+                            const EdgeInsets.symmetric(
+                          horizontal: 28,
+                          vertical: 24,
+                        ),
+                        child: Column(
+                          mainAxisSize:
+                              MainAxisSize.min,
+                          children: [
+                            Text(activity.message),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            const SizedBox(
+                              width: 220,
+                              child:
+                                  LinearProgressIndicator(
+                                color:
+                                    Color(0xFF0000CD),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            );
+          },
+        );
+      },
+      home: const _StartupGate(),
     );
   }
 }

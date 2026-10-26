@@ -141,7 +141,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final method = value?.toString();
     if (method == null || method.isEmpty) return '-';
     if (method == 'promptpay') return 'PromptPay QR';
-    if (method == 'card') return 'บัตรเครดิต/เดบิต';
+    if (method == 'card') return 'Credit/Debit Card';
     if (method.startsWith('mobile_banking_')) {
       return method.replaceFirst('mobile_banking_', 'Mobile Banking: ');
     }
@@ -309,20 +309,34 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   Future<void> _refreshInboxNotification() async {
-    if (_isRefreshingInbox) return;
+    if (_isRefreshingInbox) {
+      return;
+    }
     _isRefreshingInbox = true;
+
     try {
       final oldUnread = _unreadCount;
-      final inbox = await ApiService.getAdminInbox();
-      if (!mounted) return;
+      final inbox =
+          await ApiService.runInBackground(
+        ApiService.getAdminInbox,
+      );
+      if (!mounted) {
+        return;
+      }
       setState(() => _inbox = inbox);
+
       final newUnread = _unreadCount;
+
       if (newUnread > oldUnread) {
         _showMessage(
-            'ข้อความใหม่จากผู้ใช้งาน ${newUnread - oldUnread} ข้อความ');
+          'ข้อความใหม่จากผู้ใช้งาน '
+          '${newUnread - oldUnread} ข้อความ',
+        );
       }
     } catch (error) {
-      debugPrint('Refresh admin inbox error: $error');
+      debugPrint(
+        'Refresh admin inbox error: $error',
+      );
     } finally {
       _isRefreshingInbox = false;
     }

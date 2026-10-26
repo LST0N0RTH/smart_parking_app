@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/parking_provider.dart';
+import '../utils/license_plate_formatter.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -265,10 +267,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 Icons.directions_car_outlined,
                               ).copyWith(
                                 hintText: 'เช่น กข-1234',
-                                hintStyle: const TextStyle(color: secondaryGrey),
+                                hintStyle: const TextStyle(
+                                  color: secondaryGrey,
+                                ),
                               ),
-                              textCapitalization: TextCapitalization.characters,
+                              textCapitalization:
+                                  TextCapitalization.characters,
                               textInputAction: TextInputAction.next,
+                              inputFormatters: [
+                                const LicensePlateFormatter(),
+                                LengthLimitingTextInputFormatter(10),
+                              ],
+                              validator: (value) {
+                                final plate = normalizeLicensePlate(
+                                  value ?? '',
+                                );
+                                if (plate.isEmpty) {
+                                  return null;
+                                }
+                                if (!isValidLicensePlate(plate)) {
+                                  return 'ทะเบียนรถต้องมีขีด เช่น กข-1234';
+                                }
+                                return null;
+                              },
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -278,17 +299,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               controller: _province,
                               cursorColor: primaryColor,
                               decoration: customInputDecoration(
-                                'จังหวัด (ไม่บังคับ)',
+                                'จังหวัด (กรอกเมื่อมีทะเบียน)',
                                 Icons.map_outlined,
                               ),
-                              textCapitalization: TextCapitalization.words,
+                              textCapitalization:
+                                  TextCapitalization.words,
                               textInputAction: TextInputAction.done,
                               onFieldSubmitted: (_) => _register(),
+                              validator: (value) {
+                                final plate = normalizeLicensePlate(
+                                  _plate.text,
+                                );
+                                final province = (value ?? '').trim();
+
+                                if (plate.isNotEmpty &&
+                                    province.isEmpty) {
+                                  return 'กรุณากรอกจังหวัดของทะเบียนรถ';
+                                }
+
+                                return null;
+                              },
                             ),
                           ),
                         ],
                       ),
-                      
+
                       // Error message
                       if (_error != null) ...[
                         const SizedBox(height: 16),

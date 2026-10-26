@@ -1,12 +1,285 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http_package;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/slot.dart';
 import '../models/booking.dart';
 import '../models/payment_card.dart';
 import '../models/booking_qr_token.dart';
+
+const Duration _readTimeout = Duration(seconds: 15);
+const Duration _writeTimeout = Duration(seconds: 25);
+const Duration _logoutTimeout = Duration(seconds: 5);
+const Object _backgroundRequestZoneKey = Object();
+
+@immutable
+class ApiActivityState {
+  final int requestCount;
+  final String message;
+
+  const ApiActivityState({
+    this.requestCount = 0,
+    this.message = '',
+  });
+
+  bool get isBusy => requestCount > 0;
+}
+
+final ValueNotifier<ApiActivityState> _apiActivity =
+    ValueNotifier<ApiActivityState>(
+  const ApiActivityState(),
+);
+
+final ValueNotifier<int> _sessionInvalidations =
+    ValueNotifier<int>(0);
+
+bool _sessionInvalidationInProgress = false;
+
+void _beginApiActivity(String message) {
+  final current = _apiActivity.value;
+
+  _apiActivity.value = ApiActivityState(
+    requestCount: current.requestCount + 1,
+    message: message,
+  );
+}
+
+void _endApiActivity() {
+  final current = _apiActivity.value;
+  final nextCount = current.requestCount > 0
+      ? current.requestCount - 1
+      : 0;
+
+  _apiActivity.value = ApiActivityState(
+    requestCount: nextCount,
+    message: nextCount == 0
+        ? ''
+        : current.message,
+  );
+}
+
+bool _isPublicAuthenticationRequest(Uri uri) {
+  return const {
+    '/auth/login',
+    '/auth/register',
+    '/auth/logout',
+    '/admin/login',
+  }.contains(uri.path);
+}
+
+Duration _timeoutFor(
+  String method,
+  Uri uri,
+) {
+  if (uri.path == '/auth/logout') {
+    return _logoutTimeout;
+  }
+
+  return method.toUpperCase() == 'GET'
+      ? _readTimeout
+      : _writeTimeout;
+}
+
+String _activityMessageFor(
+  String method,
+  Uri uri,
+) {
+  if (uri.path == '/auth/logout') {
+    return 'กำลังออกจากระบบ...';
+  }
+
+  return method.toUpperCase() == 'GET'
+      ? 'กำลังโหลดข้อมูล...'
+      : 'กำลังบันทึกข้อมูล...';
+}
+
+String _timeoutMessageFor(
+  String method,
+  Uri uri,
+) {
+  if (uri.path == '/auth/logout') {
+    return 'หมดเวลารอการออกจากระบบ กรุณาลองใหม่อีกครั้ง';
+  }
+
+  return method.toUpperCase() == 'GET'
+      ? 'หมดเวลารอข้อมูล กรุณาลองใหม่อีกครั้ง'
+      : 'หมดเวลารอบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง';
+}
+
+Future<void> _invalidateExpiredSession() async {
+  if (
+      _sessionInvalidationInProgress ||
+      await ApiService.getToken() == null
+  ) {
+    return;
+  }
+
+  _sessionInvalidationInProgress = true;
+
+  try {
+    await ApiService.clearToken();
+    _sessionInvalidations.value++;
+  } finally {
+    _sessionInvalidationInProgress = false;
+  }
+}
+
+Future<T> _executeHttpRequest<T>({
+  required String method,
+  required Uri uri,
+  required Future<T> Function() send,
+  required int Function(T response) statusCode,
+}) async {
+  final tracksActivity =
+      Zone.current[_backgroundRequestZoneKey] != true;
+
+  if (tracksActivity) {
+    _beginApiActivity(
+      _activityMessageFor(method, uri),
+    );
+  }
+
+  try {
+    final response = await send().timeout(
+      _timeoutFor(method, uri),
+    );
+
+    if (
+        statusCode(response) == 401 &&
+        !_isPublicAuthenticationRequest(uri)
+    ) {
+      await _invalidateExpiredSession();
+
+      throw const ApiRequestException(
+        'สิทธิ์การเข้าสู่ระบบหมดอายุ กรุณาเข้าสู่ระบบอีกครั้ง',
+        statusCode: 401,
+      );
+    }
+
+    return response;
+  } on TimeoutException {
+    throw ApiRequestException(
+      _timeoutMessageFor(method, uri),
+    );
+  } finally {
+    if (tracksActivity) {
+      _endApiActivity();
+    }
+  }
+}
+
+class _SessionAwareClient
+    extends http_package.BaseClient {
+  final http_package.Client _inner =
+      http_package.Client();
+
+  @override
+  Future<http_package.StreamedResponse> send(
+    http_package.BaseRequest request,
+  ) {
+    return _executeHttpRequest<
+        http_package.StreamedResponse>(
+      method: request.method,
+      uri: request.url,
+      send: () => _inner.send(request),
+      statusCode: (response) =>
+          response.statusCode,
+    );
+  }
+
+  @override
+  void close() {
+    _inner.close();
+  }
+}
+
+class HttpFacade {
+  // ignore: non_constant_identifier_names
+  http_package.Client Client() =>
+      _SessionAwareClient();
+
+  Future<http_package.Response> get(
+    Uri uri, {
+    Map<String, String>? headers,
+  }) {
+    return _executeHttpRequest<
+        http_package.Response>(
+      method: 'GET',
+      uri: uri,
+      send: () => http_package.get(
+        uri,
+        headers: headers,
+      ),
+      statusCode: (response) =>
+          response.statusCode,
+    );
+  }
+
+  Future<http_package.Response> post(
+    Uri uri, {
+    Map<String, String>? headers,
+    Object? body,
+    Encoding? encoding,
+  }) {
+    return _executeHttpRequest<
+        http_package.Response>(
+      method: 'POST',
+      uri: uri,
+      send: () => http_package.post(
+        uri,
+        headers: headers,
+        body: body,
+        encoding: encoding,
+      ),
+      statusCode: (response) =>
+          response.statusCode,
+    );
+  }
+
+  Future<http_package.Response> put(
+    Uri uri, {
+    Map<String, String>? headers,
+    Object? body,
+    Encoding? encoding,
+  }) {
+    return _executeHttpRequest<
+        http_package.Response>(
+      method: 'PUT',
+      uri: uri,
+      send: () => http_package.put(
+        uri,
+        headers: headers,
+        body: body,
+        encoding: encoding,
+      ),
+      statusCode: (response) =>
+          response.statusCode,
+    );
+  }
+
+  Future<http_package.Response> delete(
+    Uri uri, {
+    Map<String, String>? headers,
+    Object? body,
+    Encoding? encoding,
+  }) {
+    return _executeHttpRequest<
+        http_package.Response>(
+      method: 'DELETE',
+      uri: uri,
+      send: () => http_package.delete(
+        uri,
+        headers: headers,
+        body: body,
+        encoding: encoding,
+      ),
+      statusCode: (response) =>
+          response.statusCode,
+    );
+  }
+}
+final HttpFacade http = HttpFacade();
 
 class ApiRequestException implements Exception {
   final String message;
@@ -18,6 +291,24 @@ class ApiRequestException implements Exception {
 }
 
 class ApiService {
+  static ValueListenable<ApiActivityState>
+      get activity => _apiActivity;
+
+  static ValueListenable<int>
+      get sessionInvalidations =>
+          _sessionInvalidations;
+
+  static Future<T> runInBackground<T>(
+    Future<T> Function() request,
+  ) {
+    return runZoned(
+      request,
+      zoneValues: {
+        _backgroundRequestZoneKey: true,
+      },
+    );
+  }
+
   static const _base = String.fromEnvironment(
     'API_BASE_URL',
     defaultValue: 'https://smart-parking-backend-h6cm.onrender.com',
@@ -84,22 +375,31 @@ class ApiService {
     };
   }
 
-  static String _errorMessage(http.Response response, String fallback) {
+  static String _errorMessage(
+    http_package.Response response,
+    String fallback,
+  ) {
     try {
       final decoded = jsonDecode(response.body);
 
       if (decoded is Map) {
-        final detail = decoded['detail'] ?? decoded['message'];
-        if (detail != null && detail.toString().trim().isNotEmpty) {
+        final detail =
+            decoded['detail'] ??
+            decoded['message'];
+        if (
+            detail != null &&
+            detail.toString().trim().isNotEmpty
+        ) {
           return detail.toString();
         }
       }
     } catch (_) {}
+
     return fallback;
   }
 
   static Map<String, dynamic> _objectBody(
-    http.Response response,
+    http_package.Response response,
     String fallback,
   ) {
     try {
@@ -109,10 +409,11 @@ class ApiService {
         return decoded;
       }
       if (decoded is Map) {
-        return Map<String, dynamic>.from(decoded);
+        return Map<String, dynamic>.from(
+          decoded,
+        );
       }
     } catch (_) {}
-
     throw ApiRequestException(fallback);
   }
 
@@ -276,40 +577,56 @@ static Future<bool> login(
 
   static Future<List<Slot>> getSlots() async {
     final client = http.Client();
+
     try {
-      final res = await client
+      final response = await client
           .get(
             Uri.parse('$_base/slots'),
             headers: await _headers(),
           )
-          .timeout(const Duration(seconds: 10));
+          .timeout(_readTimeout);
 
-      if (res.statusCode != 200) {
+      if (response.statusCode != 200) {
         throw ApiRequestException(
-          _errorMessage(res, 'ไม่สามารถอ่านสถานะช่องจอดได้'),
+          _errorMessage(
+            response,
+            'ไม่สามารถอ่านสถานะช่องจอดได้',
+          ),
+          statusCode: response.statusCode,
         );
       }
-      final decoded = jsonDecode(res.body);
+      final decoded = jsonDecode(response.body);
 
       if (decoded is! List) {
-        throw const ApiRequestException('สถานะช่องจอดไม่ถูกต้อง');
+        throw const ApiRequestException(
+          'สถานะช่องจอดไม่ถูกต้อง',
+        );
       }
-    return decoded.map((rawSlot) {
-      if (rawSlot is! Map) {
-        throw const FormatException('Slot item is invalid');
-      }
-      return Slot.fromJson(Map<String, dynamic>.from(rawSlot));
-      }).toList();
+      return decoded.map((rawSlot) {
+        if (rawSlot is! Map) {
+          throw const FormatException(
+            'Slot item is invalid',
+          );
+        }
+        return Slot.fromJson(
+          Map<String, dynamic>.from(rawSlot),
+        );
+      }).toList(growable: false);
     } on TimeoutException {
-      throw const ApiRequestException('หมดเวลา');
+      throw const ApiRequestException(
+        'หมดเวลารอสถานะช่องจอด กรุณาลองใหม่อีกครั้ง',
+      );
     } on ApiRequestException {
       rethrow;
     } on FormatException {
-      throw const ApiRequestException('สถานะช่องจอดไม่ถูกต้อง');
+      throw const ApiRequestException(
+        'สถานะช่องจอดไม่ถูกต้อง',
+      );
     } catch (error) {
       debugPrint('GetSlots Error: $error');
+
       throw const ApiRequestException(
-        'ไม่สามารถอ่านสถานะช่องจอดได้',
+        'ไม่สามารถเชื่อมต่อระบบเพื่ออ่านสถานะช่องจอดได้',
       );
     } finally {
       client.close();
@@ -319,12 +636,12 @@ static Future<bool> login(
   static Future<List<Booking>> getMyBookings() async {
     final client = http.Client();
     try {
-      final res = await client
+        final res = await client
           .get(
             Uri.parse('$_base/bookings/me'),
             headers: await _headers(),
           )
-          .timeout(const Duration(seconds: 3));
+          .timeout(_readTimeout);
 
       if (res.statusCode != 200) {
         throw ApiRequestException(
@@ -378,29 +695,49 @@ static Future<bool> login(
     }
   }
 
-  static Future<Map<String, dynamic>?> getUserProfile() async {
+  static Future<Map<String, dynamic>> getUserProfile() async {
+    final client = http.Client();
     try {
-      final res = await http.get(
-        Uri.parse('$_base/users/me'),
-        headers: await _headers(),
-      );
-
-      if (res.statusCode == 200) {
-        final decoded = jsonDecode(res.body);
-
-        if (decoded is! Map) {
-          throw const FormatException('User profile is invalid');
-        }
-
-        return Map<String, dynamic>.from(decoded);
+      final response = await client
+          .get(
+            Uri.parse('$_base/users/me'),
+            headers: await _headers(),
+          )
+          .timeout(_readTimeout);
+      if (response.statusCode != 200) {
+        throw ApiRequestException(
+          _errorMessage(
+            response,
+            'ไม่สามารถอ่านข้อมูลผู้ใช้งานได้',
+          ),
+          statusCode: response.statusCode,
+        );
       }
-    } catch (e) {
-      debugPrint('GetUserProfile Error: $e');
+      final decoded = jsonDecode(response.body);
+
+      if (decoded is! Map) {
+        throw const ApiRequestException(
+          'ข้อมูลผู้ใช้งานไม่ถูกต้อง',
+        );
+      }
+      return Map<String, dynamic>.from(decoded);
+    } on TimeoutException {
+      throw const ApiRequestException(
+        'หมดเวลารอข้อมูลผู้ใช้งาน กรุณาลองใหม่อีกครั้ง',
+      );
+    } on ApiRequestException {
+      rethrow;
+    } catch (error) {
+      debugPrint('GetUserProfile Error: $error');
+      throw const ApiRequestException(
+        'ไม่สามารถเชื่อมต่อระบบเพื่ออ่านข้อมูลผู้ใช้งานได้',
+      );
+    } finally {
+      client.close();
     }
-    return null;
   }
 
-  static Future<bool> updateProfile(
+  static Future<Map<String, dynamic>> updateProfile(
     String name,
     List<String> plates, {
     String? username,
@@ -408,33 +745,68 @@ static Future<bool> login(
     String? password,
     String? passwordConfirmation,
   }) async {
-    if (password != null && passwordConfirmation == null) {
-      return false;
+    if (password != null &&
+        passwordConfirmation == null) {
+      throw const ApiRequestException(
+        'กรุณายืนยันรหัสผ่าน',
+      );
     }
-    if (password != null && password != passwordConfirmation) {
-      return false;
+    if (password != null &&
+        password != passwordConfirmation) {
+      throw const ApiRequestException(
+        'รหัสผ่านไม่ตรงกัน',
+      );
     }
     try {
       final body = <String, dynamic>{};
-      if (username != null) body['username'] = username.trim();
+
+      if (username != null) {
+        body['username'] = username.trim();
+      }
       if (vehicles != null) {
         body['vehicles'] = vehicles;
-      } else if (password == null && username == null) {
+      } else if (password == null &&
+          username == null) {
         body['license_plate'] = plates.join(',');
       }
       if (password != null) {
         body['password'] = password;
-        body['password_confirmation'] = passwordConfirmation;
+        body['password_confirmation'] =
+            passwordConfirmation;
       }
-      final res = await http.put(
-        Uri.parse('$_base/users/me'),
-        headers: await _headers(),
-        body: jsonEncode(body),
+      final response = await http
+          .put(
+            Uri.parse('$_base/users/me'),
+            headers: await _headers(),
+            body: jsonEncode(body),
+          )
+          .timeout(_writeTimeout);
+
+      if (response.statusCode != 200) {
+        throw ApiRequestException(
+          _errorMessage(
+            response,
+            'ไม่สามารถบันทึกข้อมูลได้',
+          ),
+          statusCode: response.statusCode,
+        );
+      }
+      return _objectBody(
+        response,
+        'ข้อมูลผู้ใช้งานที่ได้รับกลับมาไม่ถูกต้อง',
       );
-      return res.statusCode == 200;
-    } catch (e) {
-      debugPrint('UpdateProfile Error: $e');
-      return false;
+    } on TimeoutException {
+      throw const ApiRequestException(
+        'หมดเวลารอบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง',
+      );
+    } on ApiRequestException {
+      rethrow;
+    } catch (error) {
+      debugPrint('UpdateProfile Error: $error');
+
+      throw const ApiRequestException(
+        'ไม่สามารถเชื่อมต่อระบบเพื่อบันทึกข้อมูลได้',
+      );
     }
   }
 

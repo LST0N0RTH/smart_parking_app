@@ -384,7 +384,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   static const Duration _overlayDelay = Duration(milliseconds: 500);
   static const Color _primaryColor = Color(0xFF0000CD);
-  static const Color _reservedColor = Color(0xFFFFC107);
+  static const Color _reservedColor = Color(0xFFE65100);
 
   Timer? _overlayDelayTimer;
   int _tab = 0;

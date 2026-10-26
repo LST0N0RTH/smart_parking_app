@@ -375,25 +375,37 @@ Future<void> _loadExitQr() async {
                   Text('รหัสการจอง: ${booking.bookingCode}'),
                   const Divider(height: 24, color: Colors.black12),
                   _row('ช่องจอด', booking.slotName),
-                  _row('เข้าจอดจริง', booking.enteredAt == null
-                      ? 'ยังไม่ยืนยัน'
-                      : fmt.format(booking.enteredAt!)),
-                  _row('ออกจริง', booking.exitedAt == null
-                      ? 'ยังไม่ออก'
-                      : fmt.format(booking.exitedAt!)),
+                  _row('ทะเบียนรถ', booking.licensePlate),
+                  _row(
+                    'เข้าจอดจริง',
+                    booking.enteredAt == null
+                        ? 'ยังไม่ยืนยัน'
+                        : fmt.format(booking.enteredAt!),
+                  ),
+                  _row(
+                    'ออกจริง',
+                    booking.exitedAt == null
+                        ? 'ยังไม่ออก'
+                        : fmt.format(booking.exitedAt!),
+                  ),
                   if (booking.exitedAt == null)
                     _row('กำหนดออก', fmt.format(booking.endTime)),
-                  _row(
-                    booking.exitedAt == null ? 'ระยะเวลาตามแผน' : 'ระยะเวลาใช้จริง',
-                    _duration(
-                      booking.enteredAt ?? booking.startTime,
-                      booking.exitedAt ?? booking.endTime,
+                    _row(
+                      booking.exitedAt == null
+                          ? 'ระยะเวลาตามแผน'
+                          : 'ระยะเวลาใช้จริง',
+                      _duration(
+                        booking.enteredAt ?? booking.startTime,
+                        booking.exitedAt ?? booking.endTime,
+                      ),
                     ),
-                  ),
-                  _row('ทะเบียนรถ', booking.licensePlate),
                   if ((booking.payment?.overstayFee ?? 0) > 0)
-                    _row('ค่าจอดเกินเวลา', '${booking.payment!.overstayFee} บาท'),
+                    _row(
+                      'ค่าจอดเกินเวลา',
+                      '${booking.payment!.overstayFee} บาท',
+                    ),
                   const Divider(height: 24, color: Colors.black12),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
